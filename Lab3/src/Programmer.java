@@ -7,6 +7,14 @@ public class Programmer extends Person {
         wordsTypedPerMinute = 0;
     }
 
+    public void setWordsTypedPerMinute(int wordsTypedPerMinute) {
+        this.wordsTypedPerMinute = wordsTypedPerMinute;
+    }
+
+    public int getWordsTypedPerMinute() {
+        return wordsTypedPerMinute;
+    }
+
     Programmer(String name, LocalDate birthDate, int wordsTypedPerMinute) {
         super(name, birthDate);
         this.wordsTypedPerMinute = wordsTypedPerMinute;
