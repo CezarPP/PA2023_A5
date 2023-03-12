@@ -42,4 +42,4 @@ JRHEFQ
 Bonus:
 * [x] Find articulation points
 * [x] Find biconnected components
-* [ ] Add JUnit tests
+* [x] Add JUnit tests
