@@ -40,6 +40,6 @@ JRHEFQ
 ```
 
 Bonus:
-* [ ] Find articulation points
-* [ ] Find biconnected components
+* [x] Find articulation points
+* [x] Find biconnected components
 * [ ] Add JUnit tests
