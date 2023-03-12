@@ -1,16 +1,47 @@
 import java.util.*;
 
+import static java.lang.Math.min;
+
 public class Network {
+    int n;
     List<Node> nodes;
-    List<List<Integer>> graph;
+    List<TreeSet<Integer>> graph;
     HashMap<String, Integer> nameToIndex;
     static final Random random = new Random();
 
+    // variables for articulation points
+    boolean[] visited;
+    int[] tin, low;
+    int timer = 0;
+    TreeSet<Integer> articulationPoints;
+
+    public static class Pair {
+        int x, y;
+
+        @Override
+        public String toString() {
+            return "Pair{" +
+                    "x=" + x +
+                    ", y=" + y +
+                    '}';
+        }
+
+        Pair(int _x, int _y) {
+            x = _x;
+            y = _y;
+        }
+    }
+
+    Stack<Pair> s;
+    ArrayList<ArrayList<Pair>> cc;
+    int cntCC = 0;
+
     Network(int networkSize) {
+        n = networkSize;
         nodes = new ArrayList<>();
         graph = new ArrayList<>();
         for (int i = 0; i < networkSize; i++)
-            graph.add(new ArrayList<>());
+            graph.add(new TreeSet<>());
         nameToIndex = new HashMap<>();
     }
 
@@ -93,5 +124,67 @@ public class Network {
                         - getImportanceOfNode(nameToIndex.get(rhs.getName())));
         for (Node node : nodeList)
             System.out.println(node.getName());
+    }
+
+    void dfs(int node, int p) {
+        visited[node] = true;
+        tin[node] = low[node] = ++timer;
+        int children = 0;
+        for (int it : graph.get(node)) {
+            if (it == p) continue;
+            if (visited[it]) {
+                low[node] = min(low[node], tin[it]);
+                if (tin[it] < tin[node])
+                    s.add(new Pair(node, it));
+            } else {
+                ++children;
+                s.add(new Pair(node, it));
+                dfs(it, node);
+                low[node] = min(low[node], low[it]);
+                if ((tin[node] == 1 && children > 1) ||
+                        (tin[node] > 1 && low[it] >= tin[node])) {
+                    // is articulation point
+                    articulationPoints.add(node);
+                    ++cntCC;
+
+                    while (s.peek().x != node || s.peek().y != it) {
+                        cc.get(cntCC).add(s.pop());
+                    }
+                    cc.get(cntCC).add(s.pop());
+                }
+            }
+        }
+        if (tin[node] == 1 && !s.empty()) {
+            // root node
+            cntCC++;
+            while (!s.empty()) {
+                cc.get(cntCC).add(s.pop());
+            }
+        }
+    }
+
+    ArrayList<Integer> findCutPoints() {
+        articulationPoints = new TreeSet<>();
+        visited = new boolean[n];
+        tin = new int[n];
+        low = new int[n];
+        cc = new ArrayList<>();
+        s = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            visited[i] = false;
+            tin[i] = low[i] = -1;
+            cc.add(new ArrayList<>());
+        }
+        for (int i = 0; i < n; ++i) {
+            if (!visited[i]) {
+                timer = 0;
+                dfs(i, -1);
+            }
+        }
+        return new ArrayList<>(articulationPoints);
+    }
+
+    ArrayList<ArrayList<Pair>> getBiconnectedComponents() {
+        return cc;
     }
 }

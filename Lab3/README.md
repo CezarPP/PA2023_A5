@@ -1,3 +1,45 @@
-#### During the lab -> Finished compulsory
+# Lab3
+* [x] Compulsory
+* [x] Homework
 
-#### Latest progress -> Added homework
+Homework main:
+```java
+public class Main {
+    public static void main(String[] args) {
+        Network network = Network.getRandomNetwork(10, 15);
+        network.printNodes();
+        network.printNetwork();
+    }
+}
+```
+
+Sample output for homework:
+```
+The network has 10 nodes
+NEEDCZ
+ONZCVVSLE
+PLSNE
+JRHEFQ
+YREVBPQR
+IPYUJVUS
+XKAHITCKE
+F
+AIGBRMPTT
+FCMLVP
+Nodes printed in increasing order of importance
+XKAHITCKE
+NEEDCZ
+YREVBPQR
+IPYUJVUS
+AIGBRMPTT
+FCMLVP
+ONZCVVSLE
+PLSNE
+F
+JRHEFQ
+```
+
+Bonus:
+* [ ] Find articulation points
+* [ ] Find biconnected components
+* [ ] Add JUnit tests
