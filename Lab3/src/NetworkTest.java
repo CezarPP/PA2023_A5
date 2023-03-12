@@ -42,5 +42,7 @@ class NetworkTest {
         ArrayList<Integer> articulationPoints = network.findCutPoints();
         assertEquals(1, articulationPoints.size());
         assertEquals(0, articulationPoints.get(0));
+        System.out.println("The articulation points are " + articulationPoints);
+        System.out.println("The biconnected components are " + network.getBiconnectedComponents());
     }
 }

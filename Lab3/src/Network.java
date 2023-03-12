@@ -145,21 +145,20 @@ public class Network {
                         (tin[node] > 1 && low[it] >= tin[node])) {
                     // is articulation point
                     articulationPoints.add(node);
-                    ++cntCC;
-
                     while (s.peek().x != node || s.peek().y != it) {
                         cc.get(cntCC).add(s.pop());
                     }
                     cc.get(cntCC).add(s.pop());
+                    ++cntCC;
                 }
             }
         }
         if (tin[node] == 1 && !s.empty()) {
             // root node
-            cntCC++;
             while (!s.empty()) {
                 cc.get(cntCC).add(s.pop());
             }
+            cntCC++;
         }
     }
 
@@ -185,6 +184,8 @@ public class Network {
     }
 
     ArrayList<ArrayList<Pair>> getBiconnectedComponents() {
+        while(cc.size() > cntCC)
+            cc.remove(cc.size() - 1);
         return cc;
     }
 }

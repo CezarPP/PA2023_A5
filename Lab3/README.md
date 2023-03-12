@@ -43,3 +43,9 @@ Bonus:
 * [x] Find articulation points
 * [x] Find biconnected components
 * [x] Add JUnit tests
+
+Sample output of second unit test:
+```
+The articulation points are [0]
+The biconnected components are [[Pair{x=0, y=2}], [Pair{x=0, y=3}], [Pair{x=0, y=4}], [Pair{x=0, y=1}]]
+```
