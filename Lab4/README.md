@@ -8,7 +8,7 @@ Lab 4
     * [x] Greedy algo for matching
 
 * [x] Bonus
-    * [x] Implement matching (by hand)
+    * [x] Implement matching
     * [x] Generate big random instances
     * [x] Compare to greedy
     * [x] Min vertex cover
