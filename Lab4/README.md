@@ -12,4 +12,4 @@ Lab 4
   * [x] Generate big random instances
   * [ ] Compare to greedy
   * [x] Min vertex cover
-  * [ ] Max independent set
+  * [x] Max independent set
