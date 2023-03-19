@@ -8,3 +8,8 @@ Lab 4
   * [ ] Greedy algo for matching
 
 * [ ] Bonus
+  * [x] Implement matching (by hand)
+  * [x] Generate big random instances
+  * [ ] Compare to greedy
+  * [x] Min vertex cover
+  * [ ] Max independent set

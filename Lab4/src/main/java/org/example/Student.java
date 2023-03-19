@@ -14,7 +14,7 @@ public class Student implements Comparable<Student> {
         this.name = name;
     }
 
-    static List<Student> getRandomStudentList(int size) {
+    static ArrayList<Student> getRandomStudentList(int size) {
         ArrayList<Student> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++)
             list.add(new Student(faker.name().fullName()));
@@ -33,5 +33,12 @@ public class Student implements Comparable<Student> {
     @Override
     public int compareTo(Student o) {
         return name.compareTo(o.name);
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }

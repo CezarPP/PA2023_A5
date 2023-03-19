@@ -1,10 +1,8 @@
 package org.example;
 
 import com.github.javafaker.Faker;
-import com.github.javafaker.Pokemon;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Project implements Comparable<Project> {
     String name;
@@ -15,7 +13,7 @@ public class Project implements Comparable<Project> {
         this.name = name;
     }
 
-    static List<Project> getRandomProjectList(int size) {
+    static ArrayList<Project> getRandomProjectList(int size) {
         ArrayList<Project> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++)
             list.add(new Project(faker.team().name()));
@@ -25,5 +23,12 @@ public class Project implements Comparable<Project> {
     @Override
     public int compareTo(Project o) {
         return name.compareTo(o.name);
+    }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }
