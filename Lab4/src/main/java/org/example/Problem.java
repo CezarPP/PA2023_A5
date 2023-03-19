@@ -129,6 +129,7 @@ public class Problem {
 
     // get any MVC
     ArrayList<Object> getMinVertexCover() {
+        doMatching();
         minVertexCoverInit();
         ArrayList<Object> ans = new ArrayList<>();
         for (int i = n; i < n + m; i++)
@@ -158,5 +159,22 @@ public class Problem {
         for (int i = 0; i < n; i++)
             if (ma.get(i) == -1 && !viz.get(i))
                 dfsVertexCover(i);
+    }
+
+    int getGreedyMatching() {
+        ma = new ArrayList<>(totalSize);
+        for (int i = 0; i < totalSize; i++)
+            ma.add(-1);
+        int cntMatched = 0;
+        for (int i = 0; i < n; i++) {
+            for(Integer it: graph.get(i))
+                if(ma.get(it) == -1) {
+                    ma.set(i, it);
+                    ma.set(it, i);
+                    cntMatched++;
+                    break;
+                }
+        }
+        return cntMatched;
     }
 }
