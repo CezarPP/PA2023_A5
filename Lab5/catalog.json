@@ -1,1 +1,18 @@
-{"documentList":[{"id":1,"name":"d1","tags":{},"uri":"https://profs.info.uaic.ro/~acf/java/labs/lab_05.html"},{"id":2,"name":"d2","tags":{},"uri":"https://profs.info.uaic.ro/~acf/java/labs/lab_04.html"},{"id":3,"name":"d3","tags":{},"uri":"https://profs.info.uaic.ro/~acf/java/labs/lab_03.html"}]}
+{
+  "documentList" : [ {
+    "uri" : "https://profs.info.uaic.ro/~acf/java/labs/lab_05.html",
+    "id" : 1,
+    "name" : "d1",
+    "tags" : { }
+  }, {
+    "uri" : "https://profs.info.uaic.ro/~acf/java/labs/lab_04.html",
+    "id" : 2,
+    "name" : "d2",
+    "tags" : { }
+  }, {
+    "uri" : "https://profs.info.uaic.ro/~acf/java/labs/lab_03.html",
+    "id" : 3,
+    "name" : "d3",
+    "tags" : { }
+  } ]
+}

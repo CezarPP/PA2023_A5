@@ -1,5 +1,7 @@
 package org.example;
 
+import javax.print.Doc;
+
 public class Main {
     public static void main(String[] args) {
         Document d1 = new Document("https://profs.info.uaic.ro/~acf/java/labs/lab_05.html", 1, "d1");
@@ -9,7 +11,11 @@ public class Main {
         catalog.addEntry(d1);
         catalog.addEntry(d2);
         catalog.addEntry(d3);
-        catalog.save();
-        // catalog.load();
+        CatalogManager catalogManager = new CatalogManager(catalog);
+        catalogManager.save();
+
+        // catalogManager.load();
+        for (Document document : catalogManager.getCatalog().getDocumentList())
+            System.out.println(document);
     }
 }

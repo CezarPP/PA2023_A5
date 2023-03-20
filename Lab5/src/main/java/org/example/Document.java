@@ -10,13 +10,13 @@ import java.util.TreeMap;
 
 public class Document implements Serializable {
     // can be a path or a link
-    String URI;
+    String uri;
     int id;
     String name;
     Map<String, String> tags;
 
 
-    boolean isValidURI(String uri) {
+    boolean isValidUri(String uri) {
         try {
             new URL(uri);
         } catch (Exception e) {
@@ -26,15 +26,17 @@ public class Document implements Serializable {
     }
 
     @JsonCreator
-    Document(String uri, int id, String name, Map<String, String> tags) {
-        setURI(uri);
+    Document(@JsonProperty("uri") String uri, @JsonProperty("id") int id,
+             @JsonProperty("name") String name, @JsonProperty("tags") Map<String, String> tags) {
+        setUri(uri);
         setId(id);
         setName(name);
         setTags(tags);
     }
 
-    Document(String uri, int id, String name) {
-        setURI(uri);
+    Document(@JsonProperty("uri") String uri, @JsonProperty("id") int id,
+             @JsonProperty("name") String name) {
+        setUri(uri);
         setId(id);
         setName(name);
         tags = new TreeMap<>();
@@ -43,7 +45,7 @@ public class Document implements Serializable {
     @Override
     public String toString() {
         return "Document{" +
-                "URI='" + URI + '\'' +
+                "URI='" + uri + '\'' +
                 ", id=" + id +
                 ", name='" + name + '\'' +
                 ", tags=" + tags +
@@ -51,16 +53,16 @@ public class Document implements Serializable {
     }
 
     @JsonProperty
-    public String getURI() {
-        return URI;
+    public String getUri() {
+        return uri;
     }
 
-    public void setURI(String uri) {
-        if (!isValidURI(uri)) {
+    public void setUri(String uri) {
+        if (!isValidUri(uri)) {
             System.out.println("Not a valid URI");
             System.exit(-1);
         }
-        this.URI = uri;
+        this.uri = uri;
     }
 
     @JsonProperty
