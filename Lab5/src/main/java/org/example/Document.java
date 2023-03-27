@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -25,9 +27,24 @@ public class Document implements Serializable {
         return true;
     }
 
+    /**
+     * Checks if given path is valid
+     *
+     * @param uri -> path
+     * @return -> true if is valid path
+     */
+    boolean isValidPath(String uri) {
+        try {
+            Paths.get(uri);
+        } catch (InvalidPathException | NullPointerException exception) {
+            return false;
+        }
+        return true;
+    }
+
     @JsonCreator
     Document(@JsonProperty("uri") String uri, @JsonProperty("id") int id,
-             @JsonProperty("name") String name, @JsonProperty("tags") Map<String, String> tags) {
+             @JsonProperty("name") String name, @JsonProperty("tags") Map<String, String> tags) throws InvalidUriException {
         setUri(uri);
         setId(id);
         setName(name);
@@ -35,7 +52,7 @@ public class Document implements Serializable {
     }
 
     Document(@JsonProperty("uri") String uri, @JsonProperty("id") int id,
-             @JsonProperty("name") String name) {
+             @JsonProperty("name") String name) throws InvalidUriException {
         setUri(uri);
         setId(id);
         setName(name);
@@ -57,10 +74,9 @@ public class Document implements Serializable {
         return uri;
     }
 
-    public void setUri(String uri) {
-        if (!isValidUri(uri)) {
-            System.out.println("Not a valid URI");
-            System.exit(-1);
+    public void setUri(String uri) throws InvalidUriException {
+        if (!isValidUri(uri) && !isValidPath(uri)) {
+            throw new InvalidUriException("The path or url provided is invalid");
         }
         this.uri = uri;
     }
