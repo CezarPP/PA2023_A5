@@ -66,7 +66,7 @@ public class Problem {
     }
 
     List<Student> displayStudentsWithLessPreferences() {
-        final int avg = getAvgNumberOfPreferences();
+        int avg = getAvgNumberOfPreferences();
         return students.stream().filter(i -> graph.get(studentIntHashMap.get(i)).size() < avg).toList();
     }
 
