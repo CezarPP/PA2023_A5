@@ -1,10 +1,6 @@
 package org.example;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 import javax.swing.*;
-import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,13 +13,10 @@ public class Main {
     static final int CANVAS_WIDTH = 600;
     static final int CANVAS_HEIGHT = 600;
     static Canvas canvas = null;
-    static ObjectMapper mapper = new ObjectMapper();
 
-    static final String saveFile = "graph.bin";
+    static final String SAVE_FILE = "graph.bin";
 
     public static void main(String[] args) {
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -66,16 +59,15 @@ public class Main {
                 if (canvas != null)
                     frame.remove(canvas);
                 canvas = new Canvas((int) numberOfDotsButton.getValue(), CANVAS_WIDTH, CANVAS_HEIGHT,
-                        (float) ((probabilityBox.getSelectedIndex() + 1) * 0.1f));
+                        ((probabilityBox.getSelectedIndex() + 1) * 0.1f));
                 frame.add(canvas, BorderLayout.CENTER);
                 frame.setVisible(true);
             }
         });
 
-        // TODO()
         save.addActionListener(e -> {
             // only save the canvas
-            try (DataOutputStream f = new DataOutputStream(new FileOutputStream(saveFile, false))) {
+            try (DataOutputStream f = new DataOutputStream(new FileOutputStream(SAVE_FILE, false))) {
                 if (canvas != null) {
                     f.writeInt(canvas.numberOfDots);
                     f.writeInt((int) (canvas.lineProbability * 100));
@@ -85,16 +77,18 @@ public class Main {
                         f.writeInt(edge.x.y);
                         f.writeInt(edge.y.x);
                         f.writeInt(edge.y.y);
-                        System.out.println("Writing the edge" + edge);
                     }
                 }
             } catch (IOException exception) {
-                throw new RuntimeException(exception);
+                JOptionPane.showMessageDialog(frame,
+                        "An error occurred while saving the file: " + exception.getMessage(),
+                        "Save Error", JOptionPane.ERROR_MESSAGE);
+                // throw new RuntimeException(exception);
             }
         });
 
         load.addActionListener(e -> {
-            try (DataInputStream f = new DataInputStream(new FileInputStream(saveFile))) {
+            try (DataInputStream f = new DataInputStream(new FileInputStream(SAVE_FILE))) {
                 if (canvas != null)
                     frame.remove(canvas);
                 int N = f.readInt();
@@ -116,7 +110,10 @@ public class Main {
                 frame.add(canvas, BorderLayout.CENTER);
                 frame.setVisible(true);
             } catch (IOException exception) {
-                throw new RuntimeException(exception);
+                JOptionPane.showMessageDialog(frame,
+                        "An error occurred while loading the file: " + exception.getMessage(),
+                        "Load Error", JOptionPane.ERROR_MESSAGE);
+                // throw new RuntimeException(exception);
             }
         });
         reset.addActionListener(e -> {
