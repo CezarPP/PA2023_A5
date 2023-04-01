@@ -6,7 +6,7 @@
     * [x] Implement the list command and view command
     * [x] Report command using FreeMaker that generates html report
     * [x] Build a JAR file
-* [ ] Bonus
+* [x] Bonus
     * [x] Info command that uses Apache Tika
 
 ```java
