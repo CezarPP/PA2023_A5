@@ -60,7 +60,7 @@ public class Canvas extends JPanel {
         pointList = new ArrayList<>();
         centerX = width / 2;
         centerY = height / 2;
-        radius = min(width, height) / 2;
+        radius = min(width, height) / 2 - DOT_SIZE;
         for (int i = 0; i < numberOfDots; i++) {
             double angle = 2 * Math.PI * i / numberOfDots;
             int x = (int) (centerX + radius * Math.cos(angle));

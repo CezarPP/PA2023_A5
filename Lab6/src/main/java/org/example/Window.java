@@ -2,8 +2,6 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
 
@@ -11,8 +9,8 @@ import static java.lang.System.exit;
 
 public class Window extends JFrame {
 
-    static final int CANVAS_WIDTH = 600;
-    static final int CANVAS_HEIGHT = 600;
+    static final int CANVAS_WIDTH = 650;
+    static final int CANVAS_HEIGHT = 650;
     static Canvas canvas = null;
 
     static final String SAVE_FILE = "graph.bin";
@@ -22,7 +20,7 @@ public class Window extends JFrame {
     JSpinner numberOfDotsButton;
     JComboBox<String> probabilityBox;
 
-    void addBottomPanelButtons() {
+    void createTopPanel() {
         load = new JButton("Load");
         save = new JButton("Save");
         reset = new JButton("Reset");
@@ -92,7 +90,7 @@ public class Window extends JFrame {
         bottomPanel.add(exit);
     }
 
-    void addTopPanelButtons() {
+    void createBottomPanel() {
         topPanel = new JPanel(new FlowLayout());
         numberOfDotsLabel = new JLabel("Number of dots:");
         topPanel.add(numberOfDotsLabel);
@@ -116,16 +114,13 @@ public class Window extends JFrame {
         topPanel.add(probabilityBox);
         createNewGameButton = new JButton("Create new game");
 
-        createNewGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (canvas != null)
-                    remove(canvas);
-                canvas = new Canvas((int) numberOfDotsButton.getValue(), CANVAS_WIDTH, CANVAS_HEIGHT,
-                        ((probabilityBox.getSelectedIndex() + 1) * 0.1f));
-                add(canvas, BorderLayout.CENTER);
-                setVisible(true);
-            }
+        createNewGameButton.addActionListener(e -> {
+            if (canvas != null)
+                remove(canvas);
+            canvas = new Canvas((int) numberOfDotsButton.getValue(), CANVAS_WIDTH, CANVAS_HEIGHT,
+                    ((probabilityBox.getSelectedIndex() + 1) * 0.1f));
+            add(canvas, BorderLayout.CENTER);
+            setVisible(true);
         });
 
         topPanel.add(createNewGameButton);
@@ -136,8 +131,8 @@ public class Window extends JFrame {
 
         setSize(800, 800);
 
-        addBottomPanelButtons();
-        addTopPanelButtons();
+        createTopPanel();
+        createBottomPanel();
 
         add(topPanel, BorderLayout.NORTH);
         add(bottomPanel, BorderLayout.SOUTH);
