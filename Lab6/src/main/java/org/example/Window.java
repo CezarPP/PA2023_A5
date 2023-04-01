@@ -26,13 +26,13 @@ public class Window extends JFrame {
         reset = new JButton("Reset");
         exit = new JButton("Exit");
         save.addActionListener(e -> {
-            // only save the canvas
+/*            // only save the canvas
             try (DataOutputStream f = new DataOutputStream(new FileOutputStream(SAVE_FILE, false))) {
                 if (canvas != null) {
                     f.writeInt(canvas.numberOfDots);
                     f.writeInt((int) (canvas.lineProbability * 100));
                     f.writeInt(canvas.edges.size());
-                    for (Canvas.Pair edge : canvas.edges) {
+                    for (Canvas.Edge edge : canvas.edges) {
                         f.writeInt(edge.x.x);
                         f.writeInt(edge.x.y);
                         f.writeInt(edge.y.x);
@@ -44,19 +44,19 @@ public class Window extends JFrame {
                         "An error occurred while saving the file: " + exception.getMessage(),
                         "Save Error", JOptionPane.ERROR_MESSAGE);
                 // throw new RuntimeException(exception);
-            }
+            }*/
         });
 
         load.addActionListener(e -> {
-            try (DataInputStream f = new DataInputStream(new FileInputStream(SAVE_FILE))) {
+/*            try (DataInputStream f = new DataInputStream(new FileInputStream(SAVE_FILE))) {
                 if (canvas != null)
                     remove(canvas);
                 int N = f.readInt();
                 float probability = f.readInt() / 100.0f;
                 int cntEdges = f.readInt();
-                ArrayList<Canvas.Pair> edges = new ArrayList<>(cntEdges);
+                ArrayList<Canvas.Edge> edges = new ArrayList<>(cntEdges);
                 for (int i = 0; i < cntEdges; i++) {
-                    Canvas.Pair edge = new Canvas.Pair();
+                    Canvas.Edge edge = new Canvas.Edge();
                     edge.x.x = f.readInt();
                     edge.x.y = f.readInt();
                     edge.y.x = f.readInt();
@@ -74,7 +74,7 @@ public class Window extends JFrame {
                         "An error occurred while loading the file: " + exception.getMessage(),
                         "Load Error", JOptionPane.ERROR_MESSAGE);
                 // throw new RuntimeException(exception);
-            }
+            }*/
         });
         reset.addActionListener(e -> {
             numberOfDotsButton.setValue(0);
