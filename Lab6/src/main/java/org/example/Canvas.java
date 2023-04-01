@@ -3,10 +3,14 @@ package org.example;
 import org.graph4j.Graph;
 import org.graph4j.GraphBuilder;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -30,22 +34,6 @@ public class Canvas extends JPanel {
 
     // Add field for the current player
     Player currentPlayer;
-
-    static class Edge {
-        // dots connected
-        int x, y;
-        LineColor lineColor;
-
-        Edge() {
-            lineColor = LineColor.GRAY;
-        }
-
-        Edge(int x, int y) {
-            this.x = x;
-            this.y = y;
-            lineColor = LineColor.GRAY;
-        }
-    }
 
     Canvas(int numberOfDots, int width, int height, float lineProbability) {
         this(numberOfDots, width, height, lineProbability, null);
@@ -154,6 +142,21 @@ public class Canvas extends JPanel {
         }
     }
 
+    public void saveToPNG(String filename) {
+        BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = image.createGraphics();
+        paint(g2d);
+        g2d.dispose();
+
+        try {
+            ImageIO.write(image, "png", new File(filename));
+        } catch (IOException e) {
+            System.out.println("Error transforming to PNG");
+            System.exit(-1);
+        }
+    }
+
+
     public int getNumberOfDots() {
         return numberOfDots;
     }
@@ -187,5 +190,4 @@ public class Canvas extends JPanel {
     public void setLineProbability(float lineProbability) {
         this.lineProbability = lineProbability;
     }
-
 }

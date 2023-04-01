@@ -4,11 +4,11 @@ import java.awt.Point;
 import java.util.List;
 
 public class ClosestEdgeFinder {
-    public static Canvas.Edge findClosestEdge(Point p, List<Canvas.Edge> edges, List<Point> pointList) {
+    public static Edge findClosestEdge(Point p, List<Edge> edges, List<Point> pointList) {
         double minDistance = Double.MAX_VALUE;
-        Canvas.Edge closestEdge = null;
+        Edge closestEdge = null;
 
-        for (Canvas.Edge edge : edges) {
+        for (Edge edge : edges) {
             double distance = pointToLineDistance(p, pointList.get(edge.x), pointList.get(edge.y));
             if (distance < minDistance) {
                 minDistance = distance;

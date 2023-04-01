@@ -1,7 +1,5 @@
 package org.example;
 
-import org.graph4j.Graph;
-
 public class TriangleCounter {
     public static int countTriangles(int[][] adjacencyMatrix) {
         int[][] A3 = matrixPower(adjacencyMatrix, 3);

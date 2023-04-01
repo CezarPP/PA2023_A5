@@ -1,5 +1,8 @@
 package org.example;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -14,68 +17,55 @@ public class Window extends JFrame {
     static Canvas canvas = null;
 
     static final String SAVE_FILE = "graph.bin";
-    JButton load, save, reset, exit, createNewGameButton;
+    JButton load, save, reset, exit, createNewGameButton, saveAsPNG;
     JPanel topPanel, bottomPanel;
     JLabel numberOfDotsLabel, sliderLabel;
     JSpinner numberOfDotsButton;
     JComboBox<String> probabilityBox;
 
-    void createTopPanel() {
-        load = new JButton("Load");
+    void createBottomPanel() {
         save = new JButton("Save");
+        load = new JButton("Load");
         reset = new JButton("Reset");
         exit = new JButton("Exit");
-        save.addActionListener(e -> {
-/*            // only save the canvas
-            try (DataOutputStream f = new DataOutputStream(new FileOutputStream(SAVE_FILE, false))) {
-                if (canvas != null) {
-                    f.writeInt(canvas.numberOfDots);
-                    f.writeInt((int) (canvas.lineProbability * 100));
-                    f.writeInt(canvas.edges.size());
-                    for (Canvas.Edge edge : canvas.edges) {
-                        f.writeInt(edge.x.x);
-                        f.writeInt(edge.x.y);
-                        f.writeInt(edge.y.x);
-                        f.writeInt(edge.y.y);
-                    }
-                }
-            } catch (IOException exception) {
-                JOptionPane.showMessageDialog(this,
-                        "An error occurred while saving the file: " + exception.getMessage(),
-                        "Save Error", JOptionPane.ERROR_MESSAGE);
-                // throw new RuntimeException(exception);
-            }*/
-        });
+        saveAsPNG = new JButton("Save as PNG");
 
-        load.addActionListener(e -> {
-/*            try (DataInputStream f = new DataInputStream(new FileInputStream(SAVE_FILE))) {
-                if (canvas != null)
-                    remove(canvas);
-                int N = f.readInt();
-                float probability = f.readInt() / 100.0f;
-                int cntEdges = f.readInt();
-                ArrayList<Canvas.Edge> edges = new ArrayList<>(cntEdges);
-                for (int i = 0; i < cntEdges; i++) {
-                    Canvas.Edge edge = new Canvas.Edge();
-                    edge.x.x = f.readInt();
-                    edge.x.y = f.readInt();
-                    edge.y.x = f.readInt();
-                    edge.y.y = f.readInt();
-                    // System.out.println("Reading the edge" + edge);
-                    edges.add(edge);
+        save.addActionListener(e -> {
+            if (canvas != null) {
+                try (FileWriter fileWriter = new FileWriter(SAVE_FILE)) {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    CanvasData canvasData = new CanvasData(canvas.numberOfDots, canvas.width, canvas.height,
+                            canvas.lineProbability, canvas.edges);
+                    objectMapper.writeValue(fileWriter, canvasData);
+                } catch (IOException exception) {
+                    JOptionPane.showMessageDialog(this,
+                            "An error occurred while saving the file: " + exception.getMessage(),
+                            "Save Error", JOptionPane.ERROR_MESSAGE);
                 }
-                canvas = new Canvas(N, CANVAS_WIDTH, CANVAS_HEIGHT, probability, edges);
-                numberOfDotsButton.setValue(N);
-                probabilityBox.setSelectedIndex((int) (probability / 0.1 - 1));
+            }
+        });
+        load.addActionListener(e -> {
+            try (FileReader fileReader = new FileReader(SAVE_FILE)) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                CanvasData canvasData = objectMapper.readValue(fileReader, CanvasData.class);
+
+                if (canvas != null) {
+                    remove(canvas);
+                }
+                canvas = new Canvas(canvasData.numberOfDots, canvasData.width, canvasData.height,
+                        canvasData.lineProbability, canvasData.edges);
+                numberOfDotsButton.setValue(canvasData.numberOfDots);
+                probabilityBox.setSelectedIndex((int) (canvasData.lineProbability / 0.1 - 1));
                 add(canvas, BorderLayout.CENTER);
                 setVisible(true);
             } catch (IOException exception) {
+                System.out.println(exception.getMessage());
                 JOptionPane.showMessageDialog(this,
                         "An error occurred while loading the file: " + exception.getMessage(),
                         "Load Error", JOptionPane.ERROR_MESSAGE);
-                // throw new RuntimeException(exception);
-            }*/
+            }
         });
+
         reset.addActionListener(e -> {
             numberOfDotsButton.setValue(0);
             probabilityBox.setSelectedIndex(0);
@@ -83,14 +73,25 @@ public class Window extends JFrame {
         });
         exit.addActionListener(e -> exit(0));
 
+        saveAsPNG.addActionListener(e -> {
+            if (canvas != null) {
+                String filename = "game_board.png";
+                canvas.saveToPNG(filename);
+                JOptionPane.showMessageDialog(this,
+                        "Game board saved as " + filename,
+                        "Saved", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
         bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         bottomPanel.add(load);
         bottomPanel.add(save);
         bottomPanel.add(reset);
         bottomPanel.add(exit);
+        bottomPanel.add(saveAsPNG);
     }
 
-    void createBottomPanel() {
+    void createTopPanel() {
         topPanel = new JPanel(new FlowLayout());
         numberOfDotsLabel = new JLabel("Number of dots:");
         topPanel.add(numberOfDotsLabel);
