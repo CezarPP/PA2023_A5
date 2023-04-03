@@ -9,7 +9,7 @@ public class ClosestEdgeFinder {
         Edge closestEdge = null;
 
         for (Edge edge : edges) {
-            double distance = pointToLineDistance(p, pointList.get(edge.x), pointList.get(edge.y));
+            double distance = pointToLineDistance(p, pointList.get(edge.getX()), pointList.get(edge.getY()));
             if (distance < minDistance) {
                 minDistance = distance;
                 closestEdge = edge;

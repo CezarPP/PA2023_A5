@@ -1,8 +1,8 @@
 package org.example;
 
 class Edge {
-    int x, y;
-    Canvas.LineColor lineColor;
+    private int x, y;
+    private Canvas.LineColor lineColor;
 
     Edge() {
         lineColor = Canvas.LineColor.GRAY;

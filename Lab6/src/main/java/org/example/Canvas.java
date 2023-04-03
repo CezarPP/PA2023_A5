@@ -26,14 +26,9 @@ public class Canvas extends JPanel {
     final int centerX, centerY, radius;
     final int DOT_SIZE = 10;
 
-    public enum Player {RED, BLUE}
-
     public enum LineColor {GRAY, RED, BLUE}
 
-    // Fields and methods from the original class ...
-
-    // Add field for the current player
-    Player currentPlayer;
+    GameState gameState = new GameState();
 
     Canvas(int numberOfDots, int width, int height, float lineProbability) {
         this(numberOfDots, width, height, lineProbability, null);
@@ -45,9 +40,6 @@ public class Canvas extends JPanel {
                 }
             }
         }
-
-        // init game
-        currentPlayer = Player.RED;
         this.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -72,36 +64,49 @@ public class Canvas extends JPanel {
         });
     }
 
+    // human player can only color blue edges
     private void handleClick(Point clickPoint) {
+        if (gameState.getCurrentPlayer() == Player.RED)
+            return;
         Edge selectedEdge = findClosestEdge(clickPoint);
-        if (selectedEdge != null && selectedEdge.lineColor == LineColor.GRAY) {
-            selectedEdge.lineColor = currentPlayer == Player.RED ? LineColor.RED : LineColor.BLUE;
-            if (checkForTriangle(currentPlayer)) {
+        if (selectedEdge != null && selectedEdge.getLineColor() == LineColor.GRAY) {
+            selectedEdge.setLineColor(LineColor.BLUE);
+            if (gameState.checkForTriangle(this, gameState.getCurrentPlayer())) {
                 JOptionPane.showMessageDialog(this,
-                        currentPlayer + " player wins!", "Game Over",
+                        gameState.getCurrentPlayer() + " player wins!", "Game Over",
                         JOptionPane.INFORMATION_MESSAGE);
                 setEnabled(false);
+                return;
             } else {
-                currentPlayer = currentPlayer == Player.RED ? Player.BLUE : Player.RED;
+                gameState.changeCurrentPlayer();
             }
             repaint();
+        }
+        if (edges.stream().noneMatch(e -> e.getLineColor() == LineColor.GRAY)) {
+            JOptionPane.showMessageDialog(this,
+                    "DRAW", "Game Over",
+                    JOptionPane.INFORMATION_MESSAGE);
+            setEnabled(false);
+        }
+        gameState.play(this);
+        repaint();
+        if (gameState.checkForTriangle(this, Player.RED)) {
+            JOptionPane.showMessageDialog(this,
+                    Player.RED + " player wins!", "Game Over",
+                    JOptionPane.INFORMATION_MESSAGE);
+            setEnabled(false);
+        }
+        if (edges.stream().noneMatch(e -> e.getLineColor() == LineColor.GRAY)) {
+            JOptionPane.showMessageDialog(this,
+                    "DRAW", "Game Over",
+                    JOptionPane.INFORMATION_MESSAGE);
+            setEnabled(false);
         }
     }
 
     // Method to find the closest edge to a click point
     private Edge findClosestEdge(Point clickPoint) {
         return ClosestEdgeFinder.findClosestEdge(clickPoint, edges, pointList);
-    }
-
-    // Method to check if the current player has formed a triangle
-    private boolean checkForTriangle(Player player) {
-        GraphBuilder graphBuilder = GraphBuilder.numVertices(numberOfDots);
-        for (Edge edge : edges)
-            if (edge.lineColor.toString().equals(player.toString())) {
-                graphBuilder.addEdge(edge.x, edge.y);
-            }
-        Graph graphForTriangles = graphBuilder.buildGraph();
-        return TriangleCounter.countTriangles(graphForTriangles.adjacencyMatrix()) > 0;
     }
 
     Canvas(int numberOfDots, int width, int height, float lineProbability, ArrayList<Edge> edges) {
@@ -135,10 +140,10 @@ public class Canvas extends JPanel {
         }
 
         for (Edge edge : edges) {
-            g.setColor(edge.lineColor == LineColor.RED ? Color.RED
-                    : edge.lineColor == LineColor.BLUE ? Color.BLUE : Color.GRAY);
-            g.drawLine(pointList.get(edge.x).x, pointList.get(edge.x).y,
-                    pointList.get(edge.y).x, pointList.get(edge.y).y);
+            g.setColor(edge.getLineColor() == LineColor.RED ? Color.RED
+                    : edge.getLineColor() == LineColor.BLUE ? Color.BLUE : Color.GRAY);
+            g.drawLine(pointList.get(edge.getX()).x, pointList.get(edge.getX()).y,
+                    pointList.get(edge.getY()).x, pointList.get(edge.getY()).y);
         }
     }
 

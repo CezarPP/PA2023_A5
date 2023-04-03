@@ -17,7 +17,7 @@ public class Window extends JFrame {
     static Canvas canvas = null;
 
     static final String SAVE_FILE = "graph.bin";
-    JButton load, save, reset, exit, createNewGameButton, saveAsPNG;
+    JButton load, save, reset, exit, createNewGameButton, saveAsPNG, startGame;
     JPanel topPanel, bottomPanel;
     JLabel numberOfDotsLabel, sliderLabel;
     JSpinner numberOfDotsButton;
@@ -29,6 +29,7 @@ public class Window extends JFrame {
         reset = new JButton("Reset");
         exit = new JButton("Exit");
         saveAsPNG = new JButton("Save as PNG");
+        startGame = new JButton("Start game");
 
         save.addActionListener(e -> {
             if (canvas != null) {
@@ -83,7 +84,15 @@ public class Window extends JFrame {
             }
         });
 
+        startGame.addActionListener(e -> {
+            if (canvas == null)
+                return;
+            canvas.gameState.play(canvas);
+            canvas.repaint();
+        });
+
         bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        bottomPanel.add(startGame);
         bottomPanel.add(load);
         bottomPanel.add(save);
         bottomPanel.add(reset);
