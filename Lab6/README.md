@@ -96,9 +96,33 @@ class Window {
 }
 ```
 
-* [ ] Bonus
-    * [ ] Implement a non-trivial AI for the game
-    * [x] Implemented `O(N^3)` algorithm using matrix exponentiation.
+* [x] Bonus
+    * [x] Implement a non-trivial AI for the game
+```java
+class GameState {
+    // ...
+    // AI plays RED, so position is evaluated from its perspective
+    // a positive score is good for the AI, a negative one is bad
+    int evaluatePosition(Canvas canvas, Player playerToMove) {
+        Graph graphWithEdgesOfPlayer = getGraphWithEdgesOfPlayer(canvas, playerToMove);
+        int mxPotential = -100;
+        for (Edge edge : canvas.edges)
+            if (edge.getLineColor() == Canvas.LineColor.GRAY) {
+                graphWithEdgesOfPlayer.addEdge(edge.getX(), edge.getY());
+                int playerPotentialTriangles =
+                        TriangleCounter.countTriangles(graphWithEdgesOfPlayer.adjacencyMatrix());
+                mxPotential = Math.max(mxPotential, playerPotentialTriangles);
+                graphWithEdgesOfPlayer.removeEdge(edge.getX(), edge.getY());
+            }
+        if (playerToMove == Player.RED)
+            return mxPotential * 100;
+        else
+            return mxPotential * (-100);
+    }
+    // ...
+}
+```
+* [x] Implemented `O(N^3)` algorithm using matrix exponentiation.
       When raising the adjacency matrix to the power k, we get
       `matrix[i][j]` = number of path from `i` to `j` of length `k`
       We raise to the third power, so we get all paths of length 3,
