@@ -48,6 +48,10 @@ public class GameState {
         for (Edge edge : canvas.edges)
             if (edge.getLineColor() == Canvas.LineColor.GRAY) {
                 edge.setLineColor(Canvas.LineColor.RED);
+                if (TriangleCounter.countTriangles(getGraphWithEdgesOfPlayer(canvas, Player.RED).adjacencyMatrix()) > 0) {
+                    edgeToColor = edge;
+                    break;
+                }
                 int crtScore = evaluatePosition(canvas, Player.BLUE);
                 if (crtScore > mxScore) {
                     mxScore = crtScore;
@@ -55,7 +59,7 @@ public class GameState {
                 }
                 edge.setLineColor(Canvas.LineColor.GRAY);
             }
-        assert(edgeToColor != null);
+        assert (edgeToColor != null);
         edgeToColor.setLineColor(Canvas.LineColor.RED);
         changeCurrentPlayer();
     }
