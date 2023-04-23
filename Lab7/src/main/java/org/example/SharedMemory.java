@@ -17,7 +17,7 @@ class SharedMemory {
 
     public synchronized List<Integer> extractTokens(int n) {
         List<Integer> extractedTokens = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n && !tokens.isEmpty(); i++) {
             extractedTokens.add(tokens.remove(0));
         }
         return extractedTokens;

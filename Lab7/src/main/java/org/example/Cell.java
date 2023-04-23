@@ -4,30 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Cell {
-    final private int row;
-    final private int col;
+    final private int row, col;
     private boolean visited;
-    private boolean containsRobot;
     final private List<Integer> tokens;
+    String wasVisitedBy;
 
     public Cell(int row, int col) {
         this.row = row;
         this.col = col;
         this.visited = false;
         this.tokens = new ArrayList<>();
-        containsRobot = false;
     }
 
-    public synchronized boolean visit() {
-        if (!visited && !containsRobot) {
-            visited = containsRobot = true;
+    public String getWasVisitedBy() {
+        return wasVisitedBy;
+    }
+
+    public synchronized boolean visit(String robotName) {
+        if (!visited) {
+            wasVisitedBy = robotName;
+            visited = true;
             return true;
         }
         return false;
-    }
-
-    public void leaveCell() {
-        containsRobot = false;
     }
 
     public synchronized void addTokens(List<Integer> newTokens) {
@@ -42,7 +41,7 @@ class Cell {
         return col;
     }
 
-    boolean isInMatrix(int size) {
+    static boolean isInMatrix(int row, int col, int size) {
         return (row >= 0 && row < size && col >= 0 && col < size);
     }
 
@@ -50,7 +49,6 @@ class Cell {
         return tokens;
     }
 
-    // DO NOT USE IN THREAD CONTEXT
     public boolean isVisited() {
         return visited;
     }
