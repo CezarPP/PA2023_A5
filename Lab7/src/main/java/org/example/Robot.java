@@ -4,9 +4,6 @@ import java.util.List;
 // import java.util.Random;
 
 class Robot implements Runnable {
-
-    static final int[] dx = {1, -1, 0, 0};
-    static final int[] dy = {0, 0, 1, -1};
     final private String name;
     private final int row, col;
     private final Map map;
@@ -23,7 +20,7 @@ class Robot implements Runnable {
         this.sharedMemory = sharedMemory;
     }
 
-    void dfs(Cell cell) {
+    void dfs(NodeInterface node) {
         synchronized (this) {
             while (isPaused()) {
                 try {
@@ -34,16 +31,11 @@ class Robot implements Runnable {
             }
         }
 
-        int row = cell.getRow();
-        int col = cell.getCol();
-        for (int index = 0; index < 4; index++) {
-            if (!Cell.isInMatrix(row + dx[index], col + dy[index], map.getSize()))
-                continue;
-            Cell newCell = map.getCell(row + dx[index], col + dy[index]);
-            if (newCell.visit(name)) {
+        for (NodeInterface it : node.getNeighbours()) {
+            if (it.visit(name)) {
                 List<Integer> tokens = sharedMemory.extractTokens(map.getSize());
-                newCell.addTokens(tokens);
-                dfs(newCell);
+                it.addTokens(tokens);
+                dfs(it);
             }
         }
     }
