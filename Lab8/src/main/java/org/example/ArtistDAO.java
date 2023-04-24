@@ -9,7 +9,7 @@ public class ArtistDAO {
         try {
             this.connection = DatabaseConnection.getInstance().getConnection();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("SQLException when connecting to DB: " + e.getMessage());
         }
     }
 
@@ -19,7 +19,7 @@ public class ArtistDAO {
             preparedStatement.setString(1, name);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("SQLException when adding artists: " + e.getMessage());
         }
     }
 
@@ -33,7 +33,7 @@ public class ArtistDAO {
                 System.out.println("ID: " + id + " | Name: " + name);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("SQLException when listing artists: " + e.getMessage());
         }
     }
 }

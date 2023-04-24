@@ -7,17 +7,16 @@ import java.sql.SQLException;
 public class DatabaseConnection {
     private static DatabaseConnection instance;
     private Connection connection;
-    final private String URL = "jdbc:postgresql://localhost:5432/postgres";
-    // TODO()
-    final private String USERNAME = "postgres";
-    final private String PASSWORD = "post123";
 
     private DatabaseConnection() throws SQLException {
+        final String URL = "jdbc:postgresql://localhost:5432/postgres";
+        final String USERNAME = "postgres";
+        final String PASSWORD = "post123";
         try {
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Database Connection Creation Failed: " + ex.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("Database Connection Creation Failed: " + e.getMessage());
         }
     }
 
