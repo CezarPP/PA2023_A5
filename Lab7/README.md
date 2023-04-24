@@ -126,3 +126,6 @@ class Supervisor {
 ```
 
 * [ ] Bonus
+* [x] Robots exploring a graph in a DFS fashion and have commands just like when exploring the matrix
+* [ ] Concurrent MST
+* [ ] Fast collaborative graph exploration
