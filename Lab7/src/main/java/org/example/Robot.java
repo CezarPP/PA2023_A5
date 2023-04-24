@@ -5,18 +5,17 @@ import java.util.List;
 
 class Robot implements Runnable {
     final private String name;
-    private final int row, col;
-    private final Map map;
+    final private int sizeOfMap;
+    NodeInterface startNode;
     private final SharedMemory sharedMemory;
 
     // Random random = new Random();
     private volatile boolean paused = false;
 
-    public Robot(String name, int row, int col, Map map, SharedMemory sharedMemory) {
+    public Robot(String name, NodeInterface startNode, int sizeOfMap, SharedMemory sharedMemory) {
         this.name = name;
-        this.row = row;
-        this.col = col;
-        this.map = map;
+        this.startNode = startNode;
+        this.sizeOfMap = sizeOfMap;
         this.sharedMemory = sharedMemory;
     }
 
@@ -33,7 +32,7 @@ class Robot implements Runnable {
 
         for (NodeInterface it : node.getNeighbours()) {
             if (it.visit(name)) {
-                List<Integer> tokens = sharedMemory.extractTokens(map.getSize());
+                List<Integer> tokens = sharedMemory.extractTokens(sizeOfMap);
                 it.addTokens(tokens);
                 dfs(it);
             }
@@ -41,11 +40,10 @@ class Robot implements Runnable {
     }
 
     public void run() {
-        Cell startCell = map.getCell(row, col);
-        if (startCell.visit(name)) {
-            List<Integer> tokens = sharedMemory.extractTokens(map.getSize());
-            startCell.addTokens(tokens);
-            dfs(startCell);
+        if (startNode.visit(name)) {
+            List<Integer> tokens = sharedMemory.extractTokens(sizeOfMap);
+            startNode.addTokens(tokens);
+            dfs(startNode);
         }
     }
 

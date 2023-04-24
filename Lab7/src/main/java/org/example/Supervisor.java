@@ -19,8 +19,8 @@ class Supervisor {
     }
 
     public void startAll() {
-        for (Robot robot : robots) {
-            new Thread(robot).start();
+        for (Thread robotThread : robotThreads) {
+            robotThread.start();
         }
     }
 
@@ -59,7 +59,7 @@ class Supervisor {
         return robots;
     }
 
-    public void displayNumberOfPlacedTokens(Map map) {
+    public void displayNumberOfPlacedTokensOnMap(Map map) {
         int[] tokenCounts = new int[getRobots().size()];
         for (int i = 0; i < map.getSize(); i++) {
             for (int j = 0; j < map.getSize(); j++) {
@@ -75,8 +75,11 @@ class Supervisor {
             }
         }
 
+        int total = 0;
         for (int i = 0; i < tokenCounts.length; i++) {
             System.out.println(getRobots().get(i).getName() + " placed " + tokenCounts[i] + " tokens.");
+            total += tokenCounts[i];
         }
+        System.out.println("Total is " + total);
     }
 }
