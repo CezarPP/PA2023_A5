@@ -127,5 +127,73 @@ class Supervisor {
 
 * [ ] Bonus
 * [x] Robots exploring a graph in a DFS fashion and have commands just like when exploring the matrix
-* [ ] Concurrent MST
+* [x] Concurrent MST -> parallel Boruvka's Algorithm
+```java
+public class ConcurrentBoruvka {
+    private static final int NUM_THREADS = Math.min(4, Runtime.getRuntime().availableProcessors() - 1);
+
+    public static List<Edge> findMST(Graph graph) {
+        System.out.println("Running concurrent on " + NUM_THREADS + " threads");
+        int N = graph.vertices().length;
+
+        int[] components = new int[N];
+        for (int i = 0; i < N; i++) {
+            components[i] = i;
+        }
+
+        List<List<Integer>> componentLists = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            List<Integer> initialCompForNode = new ArrayList<>();
+            initialCompForNode.add(i);
+            componentLists.add(initialCompForNode);
+        }
+
+
+        List<Edge> mstEdges = new ArrayList<>();
+
+        ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+
+        while (true) {
+            List<Future<Edge>> futuresList = new ArrayList<>();
+
+            int cntNotEmpty = 0;
+            for (int i = 0; i < componentLists.size(); i++)
+                if (!componentLists.get(i).isEmpty()) {
+                    cntNotEmpty++;
+                    List<Integer> componentNodes = new ArrayList<>(componentLists.get(i));
+                    futuresList.add(executor.submit(() -> findMinEdge(graph, componentNodes, components)));
+                }
+            if (cntNotEmpty == 1)
+                break;
+
+            for (Future<Edge> future : futuresList) {
+                try {
+                    Edge minEdge = future.get();
+                    if (mergeComponents(componentLists, components, minEdge)) {
+                        mstEdges.add(minEdge);
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                    System.out.println("Exception while getting future of edge: " + e.getMessage());
+                }
+            }
+        }
+
+        executor.shutdown();
+
+        return mstEdges;
+    }
+
+    private static boolean mergeComponents(List<List<Integer>> componentLists, int[] components, Edge edge);
+    private static Edge findMinEdge(Graph graph, List<Integer> componentNodes, int[] components);
+}
+```
+
+Output:
+```
+Running concurrent on 4 threads
+The cost is 19999.0 and my cost is 19999.0
+Execution time for library: 1432 ms
+Execution time for my concurrent implementation: 650 ms
+```
 * [ ] Fast collaborative graph exploration
