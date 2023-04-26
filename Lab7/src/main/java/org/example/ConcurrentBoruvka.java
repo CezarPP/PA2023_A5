@@ -14,8 +14,8 @@ public class ConcurrentBoruvka {
     private static final int NUM_THREADS = Math.min(4, Runtime.getRuntime().availableProcessors() - 1);
 
     public static List<Edge> findMST(Graph graph) {
-        System.out.println("Running concurrent on " + NUM_THREADS + " threads");
         int N = graph.vertices().length;
+        System.out.println("Running concurrent on " + NUM_THREADS + " threads for a graph of " + N + " nodes");
 
         int[] components = new int[N];
         for (int i = 0; i < N; i++) {
@@ -24,11 +24,8 @@ public class ConcurrentBoruvka {
 
         List<List<Integer>> componentLists = new ArrayList<>();
         for (int i = 0; i < N; i++) {
-            List<Integer> initialCompForNode = new ArrayList<>();
-            initialCompForNode.add(i);
-            componentLists.add(initialCompForNode);
+            componentLists.add(new ArrayList<>(List.of(i)));
         }
-
 
         List<Edge> mstEdges = new ArrayList<>();
 
@@ -38,7 +35,7 @@ public class ConcurrentBoruvka {
             List<Future<Edge>> futuresList = new ArrayList<>();
 
             int cntNotEmpty = 0;
-            for (int i = 0; i < componentLists.size(); i++)
+            for (int i = 0; i < N; i++)
                 if (!componentLists.get(i).isEmpty()) {
                     cntNotEmpty++;
                     List<Integer> componentNodes = new ArrayList<>(componentLists.get(i));
@@ -68,34 +65,34 @@ public class ConcurrentBoruvka {
     private static boolean mergeComponents(List<List<Integer>> componentLists, int[] components, Edge edge) {
         if (edge == null)
             return false;
-        int srcComponent = components[edge.source()];
-        int destComponent = components[edge.target()];
-        if (srcComponent == destComponent)
+        int src = components[edge.source()];
+        int dest = components[edge.target()];
+        List<Integer> srcComponent = componentLists.get(src);
+        List<Integer> destComponent = componentLists.get(dest);
+        if (src == dest)
             return false;
-        if (componentLists.get(srcComponent).size() > componentLists.get(destComponent).size()) {
-            for (Integer node : componentLists.get(destComponent)) {
-                components[node] = srcComponent;
+        if (srcComponent.size() > destComponent.size()) {
+            for (Integer node : destComponent) {
+                components[node] = src;
             }
-            componentLists.get(srcComponent).addAll(componentLists.get(destComponent));
-            componentLists.get(destComponent).clear();
+            srcComponent.addAll(destComponent);
+            destComponent.clear();
         } else {
-            for (Integer node : componentLists.get(srcComponent)) {
-                components[node] = destComponent;
+            for (Integer node : srcComponent) {
+                components[node] = dest;
             }
-            componentLists.get(destComponent).addAll(componentLists.get(srcComponent));
-            componentLists.get(srcComponent).clear();
+            destComponent.addAll(srcComponent);
+            srcComponent.clear();
         }
         return true;
     }
 
     private static Edge findMinEdge(Graph graph, List<Integer> componentNodes, int[] components) {
         Edge minEdge = null;
-        for (Integer nodeIndex : componentNodes) {
-            int srcComponent = components[nodeIndex];
-            for (Edge edge : graph.edgesOf(nodeIndex)) {
-                assert (edge.source() == srcComponent);
-                int destComponent = components[edge.target()];
-                if (srcComponent != destComponent && (minEdge == null || edge.weight() < minEdge.weight())) {
+        for (Integer node : componentNodes) {
+            for (Edge edge : graph.edgesOf(node)) {
+                if (components[edge.source()] != components[edge.target()] &&
+                        (minEdge == null || edge.weight() < minEdge.weight())) {
                     minEdge = edge;
                 }
             }

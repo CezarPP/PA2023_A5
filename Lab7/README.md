@@ -196,4 +196,123 @@ The cost is 19999.0 and my cost is 19999.0
 Execution time for library: 1432 ms
 Execution time for my concurrent implementation: 650 ms
 ```
-* [ ] Fast collaborative graph exploration
+* [x] Fast collaborative graph exploration
+ * Agents use locks and share their sets of visited nodes when meeting at a vertex
+Output:
+```
+Running collaborative exploration on 4 threads
+Executor finished
+The algorithm ran in 5 ms
+```
+
+```java
+package org.example;
+
+import org.graph4j.Graph;
+
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class Agent {
+    private final Graph graph;
+    private final Set<Integer> visited;
+    private final LinkedList<Integer> path;
+    private final ReentrantLock lock;
+    
+    public void explore() {
+        lock.lock();
+        try {
+            if (isFinished())
+                return;
+            assert (!path.isEmpty());
+            int currentNode = path.peek();
+            Integer nextNode = getNextUnvisitedNode(currentNode);
+
+            if (nextNode != null) {
+                path.push(nextNode);
+                visited.add(nextNode);
+            } else {
+                path.pop();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void meet(Agent other) {
+        acquireTwoLocks(this.lock, other.lock);
+        try {
+            for (Integer node : other.visited) {
+                if (!visited.contains(node)) {
+                    visited.add(node);
+                    path.push(node);
+                }
+            }
+        } finally {
+            this.lock.unlock();
+            other.lock.unlock();
+        }
+    }
+}
+```
+
+```java
+package org.example;
+
+import org.graph4j.Graph;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.concurrent.*;
+
+public class FastCollaborativeGraphExploration {
+    private final Graph graph;
+    private static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
+
+    FastCollaborativeGraphExploration(Graph graph) {
+        this.graph = graph;
+    }
+
+    public void exploreGraph(int cntAgents) {
+        int N = graph.vertices().length;
+        List<Agent> agents = new ArrayList<>();
+        Random random = new Random();
+        ConcurrentHashMap<Integer, Agent> agentPositions = new ConcurrentHashMap<>();
+
+        for (int i = 0; i < cntAgents; i++) {
+            Agent agent = new Agent(graph, random.nextInt(N));
+            agents.add(agent);
+            agentPositions.put(i, agent);
+        }
+
+        ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+
+        for (int i = 0; i < cntAgents; i++) {
+            final int agentId = i;
+            executor.execute(() -> {
+                Agent currentAgent = agents.get(agentId);
+                while (!currentAgent.isFinished()) {
+                    currentAgent.explore();
+                    agentPositions.replace(agentId, currentAgent);
+
+                    handleAgentMeetings(agentPositions, currentAgent);
+                }
+            });
+        }
+
+        executor.shutdown();
+        try {
+            boolean done = executor.awaitTermination(10000, TimeUnit.MILLISECONDS);
+            if (done)
+                System.out.println("Executor finished");
+            else
+                System.out.println("Executor not finished");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            System.out.println("Error awaiting termination of executor" + e.getMessage());
+        }
+    }
+}
+```
