@@ -1,25 +1,27 @@
 package org.example;
 
-import java.sql.*;
+import com.zaxxer.hikari.HikariDataSource;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GenreDAO implements DAO<Genre> {
-    private Connection connection;
+    private HikariDataSource dataSource;
 
     public GenreDAO() {
-        try {
-            this.connection = DatabaseConnection.getInstance().getConnection();
-        } catch (SQLException e) {
-            System.out.println("SQLException when connecting to DB: " + e.getMessage());
-        }
+        this.dataSource = (HikariDataSource) DatabaseConnection.getInstance().getDataSource();
     }
 
     @Override
     public Genre get(int id) {
         String query = "SELECT * FROM genres WHERE id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
 
             try (ResultSet rs = statement.executeQuery()) {
@@ -38,8 +40,9 @@ public class GenreDAO implements DAO<Genre> {
         List<Genre> genres = new ArrayList<>();
         String query = "SELECT * FROM genres";
 
-        try (Statement statement = connection.createStatement();
-             ResultSet rs = statement.executeQuery(query)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
                 genres.add(new Genre(rs.getInt("id"), rs.getString("name")));
@@ -54,7 +57,8 @@ public class GenreDAO implements DAO<Genre> {
     public int insert(Genre genre) {
         String query = "INSERT INTO genres (name) VALUES (?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             statement.setString(1, genre.getName());
             int affectedRows = statement.executeUpdate();
@@ -80,7 +84,8 @@ public class GenreDAO implements DAO<Genre> {
     public int update(Genre genre) {
         String query = "UPDATE genres SET name = ? WHERE id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setString(1, genre.getName());
             statement.setInt(2, genre.getId());
@@ -96,7 +101,8 @@ public class GenreDAO implements DAO<Genre> {
     public int delete(Genre genre) {
         String query = "DELETE FROM genres WHERE id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, genre.getId());
 
             return statement.executeUpdate();

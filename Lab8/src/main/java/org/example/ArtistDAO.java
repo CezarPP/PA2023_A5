@@ -1,32 +1,33 @@
 package org.example;
 
-import java.sql.*;
+import com.zaxxer.hikari.HikariDataSource;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistDAO implements DAO<Artist> {
-    private Connection connection;
+    private HikariDataSource dataSource;
 
     public ArtistDAO() {
-        try {
-            this.connection = DatabaseConnection.getInstance().getConnection();
-        } catch (SQLException e) {
-            System.out.println("SQLException when connecting to DB: " + e.getMessage());
-        }
+        this.dataSource = (HikariDataSource) DatabaseConnection.getInstance().getDataSource();
     }
 
     @Override
     public Artist get(int id) {
         String query = "SELECT * FROM artists WHERE id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     return new Artist(rs.getInt("id"), rs.getString("name"));
                 }
-                return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -39,8 +40,9 @@ public class ArtistDAO implements DAO<Artist> {
         List<Artist> artists = new ArrayList<>();
         String query = "SELECT * FROM artists";
 
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
                 artists.add(new Artist(rs.getInt("id"), rs.getString("name")));
@@ -55,7 +57,8 @@ public class ArtistDAO implements DAO<Artist> {
     public int insert(Artist artist) {
         String query = "INSERT INTO artists (name) VALUES (?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             statement.setString(1, artist.getName());
             int affectedRows = statement.executeUpdate();
@@ -81,7 +84,8 @@ public class ArtistDAO implements DAO<Artist> {
     public int update(Artist artist) {
         String query = "UPDATE artists SET name = ? WHERE id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setString(1, artist.getName());
             statement.setInt(2, artist.getId());
@@ -97,7 +101,8 @@ public class ArtistDAO implements DAO<Artist> {
     public int delete(Artist artist) {
         String query = "DELETE FROM artists WHERE id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, artist.getId());
 
             return statement.executeUpdate();
