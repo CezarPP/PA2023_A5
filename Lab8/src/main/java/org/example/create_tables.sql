@@ -15,8 +15,7 @@ CREATE TABLE albums
     id           SERIAL PRIMARY KEY,
     release_year INTEGER,
     title        VARCHAR(255) NOT NULL,
-    artist       INTEGER REFERENCES artists (id),
-    genre        INTEGER REFERENCES genres (id)
+    artist       INTEGER REFERENCES artists (id)
 );
 
 CREATE TABLE album_genres

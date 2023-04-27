@@ -15,6 +15,7 @@ public class DatabaseConnection {
         try {
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            connection.setAutoCommit(false);
         } catch (ClassNotFoundException e) {
             System.out.println("Database Connection Creation Failed: " + e.getMessage());
         }
@@ -22,6 +23,15 @@ public class DatabaseConnection {
 
     public Connection getConnection() {
         return connection;
+    }
+
+    public void closeConnection() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error closing connection to db" + e.getMessage());
+        }
     }
 
     public static DatabaseConnection getInstance() throws SQLException {
