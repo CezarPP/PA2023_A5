@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlbumDAO implements DAO<Album> {
-    private HikariDataSource dataSource;
+    private final HikariDataSource dataSource;
 
     public AlbumDAO() {
         this.dataSource = (HikariDataSource) DatabaseConnection.getInstance().getDataSource();

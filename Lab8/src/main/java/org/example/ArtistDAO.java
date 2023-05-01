@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistDAO implements DAO<Artist> {
-    private HikariDataSource dataSource;
+    private final HikariDataSource dataSource;
 
     public ArtistDAO() {
         this.dataSource = (HikariDataSource) DatabaseConnection.getInstance().getDataSource();
@@ -110,5 +110,23 @@ public class ArtistDAO implements DAO<Artist> {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public Artist getByName(String name) {
+        String query = "SELECT * FROM artists WHERE name = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, name);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return new Artist(rs.getInt("id"), rs.getString("name"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

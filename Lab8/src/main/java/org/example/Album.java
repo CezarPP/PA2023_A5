@@ -44,4 +44,14 @@ public class Album {
     public void setArtist(int artist) {
         this.artist = artist;
     }
+
+    @Override
+    public String toString() {
+        return "Album{" +
+                "id=" + id +
+                ", release_year=" + release_year +
+                ", title='" + title + '\'' +
+                ", artist=" + artist +
+                '}';
+    }
 }

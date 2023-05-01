@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GenreDAO implements DAO<Genre> {
-    private HikariDataSource dataSource;
+    private final HikariDataSource dataSource;
 
     public GenreDAO() {
         this.dataSource = (HikariDataSource) DatabaseConnection.getInstance().getDataSource();
