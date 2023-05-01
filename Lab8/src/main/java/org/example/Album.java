@@ -1,10 +1,12 @@
 package org.example;
 
+import java.util.List;
+
 public class Album {
     private int id;
     private int release_year;
     private String title;
-    int artist;
+    private int artist;
 
     public Album(int id, int release_year, String title, int artist) {
         this.id = id;
@@ -53,5 +55,15 @@ public class Album {
                 ", title='" + title + '\'' +
                 ", artist=" + artist +
                 '}';
+    }
+
+    boolean checkAreRelated(Album album) {
+        if (this.artist == album.artist || this.release_year == album.release_year)
+            return true;
+        AlbumGenreDAO albumGenreDAO = new AlbumGenreDAO();
+        List<Genre> genreList1 = albumGenreDAO.getGenresOfAlbum(this.id);
+        List<Genre> genreList2 = albumGenreDAO.getGenresOfAlbum(album.id);
+
+        return genreList1.stream().anyMatch(genreList2::contains);
     }
 }

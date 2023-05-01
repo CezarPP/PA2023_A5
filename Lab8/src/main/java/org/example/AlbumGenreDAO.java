@@ -122,4 +122,27 @@ public class AlbumGenreDAO implements DAO<AlbumGenre> {
         }
         return albums;
     }
+
+    public List<Genre> getGenresOfAlbum(int albumId) {
+        String query = "SELECT g.id, g.name FROM genres g " +
+                "JOIN album_genres ag ON g.id = ag.genre_id " +
+                "WHERE ag.album_id = ?";
+        List<Genre> genres = new ArrayList<>();
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, albumId);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                genres.add(new Genre(id, name));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching genres for album " + albumId + ": " + e.getMessage());
+        }
+
+        return genres;
+    }
 }

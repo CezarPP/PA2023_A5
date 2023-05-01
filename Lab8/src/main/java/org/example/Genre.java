@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.Objects;
+
 public class Genre {
     int id;
     String name;
@@ -23,5 +25,17 @@ public class Genre {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Genre genre)) return false;
+        return id == genre.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }
