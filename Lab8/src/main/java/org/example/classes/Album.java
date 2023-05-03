@@ -1,4 +1,4 @@
-package org.example.entity;
+package org.example.classes;
 
 import org.example.DAOs.AlbumGenreDAO;
 

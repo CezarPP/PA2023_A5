@@ -1,9 +1,9 @@
 package org.example.DAOs;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.example.entity.Album;
-import org.example.entity.AlbumGenre;
-import org.example.entity.Genre;
+import org.example.classes.Album;
+import org.example.classes.AlbumGenre;
+import org.example.classes.Genre;
 import org.example.misc.DatabaseConnection;
 
 import java.sql.Connection;

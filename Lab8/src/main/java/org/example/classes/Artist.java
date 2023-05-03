@@ -1,4 +1,4 @@
-package org.example.entity;
+package org.example.classes;
 
 public class Artist {
     private int id;

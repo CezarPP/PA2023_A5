@@ -6,10 +6,10 @@ import org.example.DAOs.AlbumDAO;
 import org.example.DAOs.AlbumGenreDAO;
 import org.example.DAOs.ArtistDAO;
 import org.example.DAOs.GenreDAO;
-import org.example.entity.Album;
-import org.example.entity.AlbumGenre;
-import org.example.entity.Artist;
-import org.example.entity.Genre;
+import org.example.classes.Album;
+import org.example.classes.AlbumGenre;
+import org.example.classes.Artist;
+import org.example.classes.Genre;
 
 import java.io.*;
 import java.util.HashMap;

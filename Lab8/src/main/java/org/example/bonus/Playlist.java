@@ -1,6 +1,6 @@
 package org.example.bonus;
 
-import org.example.entity.Album;
+import org.example.classes.Album;
 
 import java.time.LocalTime;
 import java.util.ArrayList;

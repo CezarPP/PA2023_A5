@@ -1,7 +1,7 @@
 package org.example.DAOs;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.example.entity.Album;
+import org.example.classes.Album;
 import org.example.misc.DatabaseConnection;
 
 import java.sql.Connection;
