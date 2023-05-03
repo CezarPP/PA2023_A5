@@ -1,6 +1,8 @@
-package org.example;
+package org.example.DAOs;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.example.misc.DatabaseConnection;
+import org.example.entity.Genre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,16 +11,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArtistDAO implements DAO<Artist> {
+public class GenreDAO implements DAO<Genre> {
     private final HikariDataSource dataSource;
 
-    public ArtistDAO() {
+    public GenreDAO() {
         this.dataSource = (HikariDataSource) DatabaseConnection.getInstance().getDataSource();
     }
 
     @Override
-    public Artist get(int id) {
-        String query = "SELECT * FROM artists WHERE id = ?";
+    public Genre get(int id) {
+        String query = "SELECT * FROM genres WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -26,7 +28,7 @@ public class ArtistDAO implements DAO<Artist> {
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-                    return new Artist(rs.getInt("id"), rs.getString("name"));
+                    return new Genre(rs.getInt("id"), rs.getString("name"));
                 }
             }
         } catch (SQLException e) {
@@ -36,59 +38,59 @@ public class ArtistDAO implements DAO<Artist> {
     }
 
     @Override
-    public List<Artist> getAll() {
-        List<Artist> artists = new ArrayList<>();
-        String query = "SELECT * FROM artists";
+    public List<Genre> getAll() {
+        List<Genre> genres = new ArrayList<>();
+        String query = "SELECT * FROM genres";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
-                artists.add(new Artist(rs.getInt("id"), rs.getString("name")));
+                genres.add(new Genre(rs.getInt("id"), rs.getString("name")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return artists;
+        return genres;
     }
 
     @Override
-    public int insert(Artist artist) {
-        String query = "INSERT INTO artists (name) VALUES (?)";
+    public int insert(Genre genre) {
+        String query = "INSERT INTO genres (name) VALUES (?)";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            statement.setString(1, artist.getName());
+            statement.setString(1, genre.getName());
             int affectedRows = statement.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new SQLException("Creating artist failed, no rows affected.");
+                throw new SQLException("Creating genre failed, no rows affected.");
             }
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    artist.setId(generatedKeys.getInt(1));
+                    genre.setId(generatedKeys.getInt(1));
                 } else {
-                    throw new SQLException("Creating artist failed, no ID obtained.");
+                    throw new SQLException("Creating genre failed, no ID obtained.");
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return artist.getId();
+        return genre.getId();
     }
 
     @Override
-    public int update(Artist artist) {
-        String query = "UPDATE artists SET name = ? WHERE id = ?";
+    public int update(Genre genre) {
+        String query = "UPDATE genres SET name = ? WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
 
-            statement.setString(1, artist.getName());
-            statement.setInt(2, artist.getId());
+            statement.setString(1, genre.getName());
+            statement.setInt(2, genre.getId());
 
             return statement.executeUpdate();
         } catch (SQLException e) {
@@ -98,35 +100,17 @@ public class ArtistDAO implements DAO<Artist> {
     }
 
     @Override
-    public int delete(Artist artist) {
-        String query = "DELETE FROM artists WHERE id = ?";
+    public int delete(Genre genre) {
+        String query = "DELETE FROM genres WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, artist.getId());
+            statement.setInt(1, genre.getId());
 
             return statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
-    }
-
-    public Artist getByName(String name) {
-        String query = "SELECT * FROM artists WHERE name = ?";
-
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, name);
-
-            try (ResultSet rs = statement.executeQuery()) {
-                if (rs.next()) {
-                    return new Artist(rs.getInt("id"), rs.getString("name"));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

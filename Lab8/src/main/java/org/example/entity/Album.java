@@ -1,4 +1,6 @@
-package org.example;
+package org.example.entity;
+
+import org.example.DAOs.AlbumGenreDAO;
 
 import java.util.List;
 
@@ -57,7 +59,7 @@ public class Album {
                 '}';
     }
 
-    boolean checkAreRelated(Album album) {
+    public boolean checkAreRelated(Album album) {
         if (this.artist == album.artist || this.release_year == album.release_year)
             return true;
         AlbumGenreDAO albumGenreDAO = new AlbumGenreDAO();

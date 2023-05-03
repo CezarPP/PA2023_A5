@@ -1,4 +1,4 @@
-package org.example;
+package org.example.bonus;
 
 import org.graph4j.Graph;
 

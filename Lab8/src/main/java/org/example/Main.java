@@ -1,5 +1,11 @@
 package org.example;
 
+import org.example.DAOs.AlbumDAO;
+import org.example.DAOs.ArtistDAO;
+import org.example.bonus.MaximalIndependentSets;
+import org.example.bonus.Playlist;
+import org.example.entity.Album;
+import org.example.entity.Artist;
 import org.graph4j.Graph;
 import org.graph4j.GraphBuilder;
 
