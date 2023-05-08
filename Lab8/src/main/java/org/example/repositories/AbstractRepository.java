@@ -1,12 +1,13 @@
 package org.example.repositories;
 
+import org.example.DAOs.DAO;
 import org.example.misc.PersistenceManager;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
-public abstract class AbstractRepository<T> {
+public abstract class AbstractRepository<T> implements DAO<T> {
     private final Class<T> entityClass;
 
     protected AbstractRepository(Class<T> entityClass) {
@@ -25,7 +26,7 @@ public abstract class AbstractRepository<T> {
         em.close();
     }
 
-    public T findById(Object id) {
+    public T findById(T id) {
         EntityManager em = getEntityManager();
         T entity = em.find(entityClass, id);
         em.close();

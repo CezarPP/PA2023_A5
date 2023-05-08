@@ -17,6 +17,15 @@ public class AlbumGenresEntity {
     @Column(name = "genre_id")
     private int genreId;
 
+    public AlbumGenresEntity(int id, int albumId, int genreId) {
+        this.id = id;
+        this.albumId = albumId;
+        this.genreId = genreId;
+    }
+
+    public AlbumGenresEntity() {
+    }
+
     public int getId() {
         return id;
     }

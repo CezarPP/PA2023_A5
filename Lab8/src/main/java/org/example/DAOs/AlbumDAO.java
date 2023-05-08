@@ -2,6 +2,7 @@ package org.example.DAOs;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.example.classes.Album;
+import org.example.entities.AlbumsEntity;
 import org.example.misc.DatabaseConnection;
 
 import java.sql.Connection;
@@ -11,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlbumDAO implements DAO<Album> {
+public class AlbumDAO implements DAO<AlbumsEntity> {
     private final HikariDataSource dataSource;
 
     public AlbumDAO() {
@@ -19,16 +20,16 @@ public class AlbumDAO implements DAO<Album> {
     }
 
     @Override
-    public Album get(int id) {
+    public AlbumsEntity findById(AlbumsEntity id) {
         String query = "SELECT * FROM albums WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, id);
+            statement.setInt(1, id.getId());
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-                    return new Album(rs.getInt("id"), rs.getInt("release_year"), rs.getString("title"), rs.getInt("artist"));
+                    return new AlbumsEntity(rs.getInt("id"), rs.getInt("release_year"), rs.getString("title"), rs.getInt("artist"));
                 }
             }
         } catch (SQLException e) {
@@ -38,8 +39,8 @@ public class AlbumDAO implements DAO<Album> {
     }
 
     @Override
-    public List<Album> getAll() {
-        List<Album> albums = new ArrayList<>();
+    public List<AlbumsEntity> getAll() {
+        List<AlbumsEntity> albums = new ArrayList<>();
         String query = "SELECT * FROM albums";
 
         try (Connection connection = dataSource.getConnection();
@@ -47,7 +48,7 @@ public class AlbumDAO implements DAO<Album> {
              ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
-                albums.add(new Album(rs.getInt("id"), rs.getInt("release_year"), rs.getString("title"), rs.getInt("artist")));
+                albums.add(new AlbumsEntity(rs.getInt("id"), rs.getInt("release_year"), rs.getString("title"), rs.getInt("artist")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -56,15 +57,15 @@ public class AlbumDAO implements DAO<Album> {
     }
 
     @Override
-    public int insert(Album album) {
+    public void create(AlbumsEntity album) {
         String query = "INSERT INTO albums (release_year, title, artist) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            statement.setInt(1, album.getRelease_year());
+            statement.setInt(1, album.getReleaseYear());
             statement.setString(2, album.getTitle());
-            statement.setInt(3, album.getArtist());
+            statement.setInt(3, album.getArtist().getId());
             int affectedRows = statement.executeUpdate();
 
             if (affectedRows == 0) {
@@ -81,10 +82,8 @@ public class AlbumDAO implements DAO<Album> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return album.getId();
     }
 
-    @Override
     public int update(Album album) {
         String query = "UPDATE albums SET release_year = ?, title = ?, artist = ? WHERE id = ?";
 
@@ -103,7 +102,6 @@ public class AlbumDAO implements DAO<Album> {
         return 0;
     }
 
-    @Override
     public int delete(Album album) {
         String query = "DELETE FROM albums WHERE id = ?";
 

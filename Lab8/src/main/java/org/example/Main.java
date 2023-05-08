@@ -6,9 +6,12 @@ import org.example.bonus.MaximalIndependentSets;
 import org.example.bonus.Playlist;
 import org.example.classes.Album;
 import org.example.classes.Artist;
+import org.example.entities.AlbumsEntity;
+import org.example.entities.ArtistsEntity;
 import org.example.misc.FakeDataGenerator;
 import org.graph4j.Graph;
 import org.graph4j.GraphBuilder;
+import org.example.factory.DAOTypes;
 
 import java.util.List;
 import java.util.Set;
@@ -20,17 +23,16 @@ public class Main {
         // new AlbumImporter("/album_list.csv").importData();
 
         // LAB8
-
         AlbumDAO albumDAO = new AlbumDAO();
         System.out.println("Listing all albums:");
-        List<Album> albumList = albumDAO.getAll();
-        for (Album album : albumList)
+        List<AlbumsEntity> albumList = albumDAO.getAll();
+        for (AlbumsEntity album : albumList)
             System.out.println(album);
 
         ArtistDAO artistDAO = new ArtistDAO();
         System.out.println("Listing all artists:");
-        List<Artist> artistList = artistDAO.getAll();
-        for (Artist artist : artistList)
+        List<ArtistsEntity> artistList = artistDAO.getAll();
+        for (ArtistsEntity artist : artistList)
             System.out.println(artist);
 
         Graph albumGraph = GraphBuilder.numVertices(albumList.size()).buildGraph();
@@ -50,6 +52,8 @@ public class Main {
 
 
         // LAB9
-        FakeDataGenerator.insertRandomArtistsAndAlbums();
+        // FakeDataGenerator.insertRandomArtistsAndAlbums();
+
+        DAOTypes daoType = DAOTypes.JPA;
     }
 }

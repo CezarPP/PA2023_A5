@@ -198,5 +198,48 @@ Inserted 10000 fake albums in 3201 ms
 ```
 
 * [ ] Bonus
-  * [ ] JDBC and JPA implementations and use AbstractFactory to create DAO objects
+  * [x] JDBC and JPA implementations and use AbstractFactory to create DAO objects
+```java
+public abstract class AbstractFactory {
+    public abstract DAO<AlbumsEntity> getAlbumDAO();
+    public abstract DAO<ArtistsEntity> getArtistDAO();
+    public abstract DAO<GenresEntity> getGenreDAO();
+    
+    public static AbstractFactory getDAOFactory(DAOTypes daoType) {
+        return switch (daoType) {
+            case JDBC -> new JDBCDAOFactory();
+            case JPA -> new JPADAOFactory();
+        };
+    }
+}
+public class JDBCDAOFactory extends AbstractFactory {
+    @Override
+    public DAO<AlbumsEntity> getAlbumDAO() {
+        return new AlbumDAO();
+    }
+    @Override
+    public DAO<ArtistsEntity> getArtistDAO() {
+        return new ArtistDAO();
+    }
+    @Override
+    public DAO<GenresEntity> getGenreDAO() {
+        return new GenreDAO();
+    }
+}
+public class JPADAOFactory extends AbstractFactory {
+    @Override
+    public DAO<AlbumsEntity> getAlbumDAO() {
+        return new AlbumRepository();
+    }
+    @Override
+    public DAO<ArtistsEntity> getArtistDAO() {
+        return new ArtistRepository();
+    }
+    @Override
+    public DAO<GenresEntity> getGenreDAO() {
+        return new GenreRepository();
+    }
+}
+
+```
   * [ ] Constraint solver ...

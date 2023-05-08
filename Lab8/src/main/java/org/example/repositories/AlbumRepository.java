@@ -23,4 +23,11 @@ public class AlbumRepository extends AbstractRepository<AlbumsEntity> {
         return albums;
     }
 
+    public List<AlbumsEntity> getAll() {
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        TypedQuery<AlbumsEntity> query = em.createQuery("SELECT a FROM AlbumsEntity a", AlbumsEntity.class);
+        return query.getResultList();
+    }
+
 }

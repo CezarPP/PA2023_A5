@@ -24,6 +24,14 @@ public class GenresEntity {
     )
     private List<AlbumsEntity> albums;
 
+    public GenresEntity(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public GenresEntity() {
+    }
+
     public int getId() {
         return id;
     }

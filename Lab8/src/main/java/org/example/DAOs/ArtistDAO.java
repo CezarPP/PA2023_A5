@@ -1,8 +1,9 @@
 package org.example.DAOs;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.example.classes.Artist;
+import org.example.entities.ArtistsEntity;
 import org.example.misc.DatabaseConnection;
+import org.example.classes.Artist;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArtistDAO implements DAO<Artist> {
+public class ArtistDAO implements DAO<ArtistsEntity> {
     private final HikariDataSource dataSource;
 
     public ArtistDAO() {
@@ -19,16 +20,16 @@ public class ArtistDAO implements DAO<Artist> {
     }
 
     @Override
-    public Artist get(int id) {
+    public ArtistsEntity findById(ArtistsEntity id) {
         String query = "SELECT * FROM artists WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, id);
+            statement.setInt(1, id.getId());
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-                    return new Artist(rs.getInt("id"), rs.getString("name"));
+                    return new ArtistsEntity(rs.getInt("id"), rs.getString("name"));
                 }
             }
         } catch (SQLException e) {
@@ -38,8 +39,8 @@ public class ArtistDAO implements DAO<Artist> {
     }
 
     @Override
-    public List<Artist> getAll() {
-        List<Artist> artists = new ArrayList<>();
+    public List<ArtistsEntity> getAll() {
+        List<ArtistsEntity> artists = new ArrayList<>();
         String query = "SELECT * FROM artists";
 
         try (Connection connection = dataSource.getConnection();
@@ -47,7 +48,7 @@ public class ArtistDAO implements DAO<Artist> {
              ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
-                artists.add(new Artist(rs.getInt("id"), rs.getString("name")));
+                artists.add(new ArtistsEntity(rs.getInt("id"), rs.getString("name")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -56,7 +57,7 @@ public class ArtistDAO implements DAO<Artist> {
     }
 
     @Override
-    public int insert(Artist artist) {
+    public void create(ArtistsEntity artist) {
         String query = "INSERT INTO artists (name) VALUES (?)";
 
         try (Connection connection = dataSource.getConnection();
@@ -79,10 +80,8 @@ public class ArtistDAO implements DAO<Artist> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return artist.getId();
     }
 
-    @Override
     public int update(Artist artist) {
         String query = "UPDATE artists SET name = ? WHERE id = ?";
 
@@ -99,7 +98,6 @@ public class ArtistDAO implements DAO<Artist> {
         return 0;
     }
 
-    @Override
     public int delete(Artist artist) {
         String query = "DELETE FROM artists WHERE id = ?";
 

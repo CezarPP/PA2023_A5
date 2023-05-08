@@ -10,6 +10,10 @@ import org.example.classes.Album;
 import org.example.classes.AlbumGenre;
 import org.example.classes.Artist;
 import org.example.classes.Genre;
+import org.example.entities.AlbumGenresEntity;
+import org.example.entities.AlbumsEntity;
+import org.example.entities.ArtistsEntity;
+import org.example.entities.GenresEntity;
 
 import java.io.*;
 import java.util.HashMap;
@@ -49,22 +53,22 @@ public class AlbumImporter {
                 String genreName = record[4];
 
                 int artistId = artistMap.computeIfAbsent(artistName, name -> {
-                    Artist artist = new Artist(0, name);
-                    artistDAO.insert(artist);
+                    ArtistsEntity artist = new ArtistsEntity(0, name);
+                    artistDAO.create(artist);
                     return artist.getId();
                 });
 
-                Album album = new Album(0, year, albumTitle, artistId);
-                albumDAO.insert(album);
+                AlbumsEntity album = new AlbumsEntity(0, year, albumTitle, artistId);
+                albumDAO.create(album);
 
                 int genreId = genreMap.computeIfAbsent(genreName, name -> {
-                    Genre genre = new Genre(0, name);
-                    genreDAO.insert(genre);
+                    GenresEntity genre = new GenresEntity(0, name);
+                    genreDAO.create(genre);
                     return genre.getId();
                 });
 
-                AlbumGenre albumGenre = new AlbumGenre(0, album.getId(), genreId);
-                albumGenreDAO.insert(albumGenre);
+                AlbumGenresEntity albumGenre = new AlbumGenresEntity(0, album.getId(), genreId);
+                albumGenreDAO.create(albumGenre);
             }
 
         } catch (IOException | CsvException e) {

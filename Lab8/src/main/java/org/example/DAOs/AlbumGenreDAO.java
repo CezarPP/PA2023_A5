@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.example.classes.Album;
 import org.example.classes.AlbumGenre;
 import org.example.classes.Genre;
+import org.example.entities.AlbumGenresEntity;
 import org.example.misc.DatabaseConnection;
 
 import java.sql.Connection;
@@ -13,7 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlbumGenreDAO implements DAO<AlbumGenre> {
+public class AlbumGenreDAO implements DAO<AlbumGenresEntity> {
     private final HikariDataSource dataSource;
 
     public AlbumGenreDAO() {
@@ -21,16 +22,16 @@ public class AlbumGenreDAO implements DAO<AlbumGenre> {
     }
 
     @Override
-    public AlbumGenre get(int id) {
+    public AlbumGenresEntity findById(AlbumGenresEntity id) {
         String query = "SELECT * FROM album_genres WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, id);
+            statement.setInt(1, id.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     int albumId = resultSet.getInt("album_id");
                     int genreId = resultSet.getInt("genre_id");
-                    return new AlbumGenre(id, albumId, genreId);
+                    return new AlbumGenresEntity(id.getId(), albumId, genreId);
                 }
             }
         } catch (SQLException e) {
@@ -40,8 +41,8 @@ public class AlbumGenreDAO implements DAO<AlbumGenre> {
     }
 
     @Override
-    public List<AlbumGenre> getAll() {
-        List<AlbumGenre> albumGenres = new ArrayList<>();
+    public List<AlbumGenresEntity> getAll() {
+        List<AlbumGenresEntity> albumGenres = new ArrayList<>();
         String query = "SELECT * FROM album_genres";
 
         try (Connection connection = dataSource.getConnection();
@@ -51,7 +52,7 @@ public class AlbumGenreDAO implements DAO<AlbumGenre> {
                 int id = resultSet.getInt("id");
                 int albumId = resultSet.getInt("album_id");
                 int genreId = resultSet.getInt("genre_id");
-                albumGenres.add(new AlbumGenre(id, albumId, genreId));
+                albumGenres.add(new AlbumGenresEntity(id, albumId, genreId));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -60,21 +61,18 @@ public class AlbumGenreDAO implements DAO<AlbumGenre> {
     }
 
     @Override
-    public int insert(AlbumGenre albumGenre) {
+    public void create(AlbumGenresEntity albumGenre) {
         String query = "INSERT INTO album_genres (album_id, genre_id) VALUES (?, ?)";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, albumGenre.getAlbumId());
             statement.setInt(2, albumGenre.getGenreId());
-            return statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1;
     }
 
-    @Override
     public int update(AlbumGenre albumGenre) {
         String query = "UPDATE album_genres SET album_id = ?, genre_id = ? WHERE id = ?";
 
@@ -90,7 +88,6 @@ public class AlbumGenreDAO implements DAO<AlbumGenre> {
         return -1;
     }
 
-    @Override
     public int delete(AlbumGenre albumGenre) {
         String query = "DELETE FROM album_genres WHERE id = ?";
 

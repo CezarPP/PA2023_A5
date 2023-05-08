@@ -1,6 +1,8 @@
 package org.example.bonus;
 
 import org.example.classes.Album;
+import org.example.entities.AlbumsEntity;
+import org.example.entities.ArtistsEntity;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ import java.util.List;
 public class Playlist {
     private final String name;
     private final LocalTime creationTimestamp;
-    List<Album> albumList;
+    List<AlbumsEntity> albumList;
 
     public String getName() {
         return name;
@@ -17,7 +19,7 @@ public class Playlist {
     public LocalTime getCreationTimestamp() {
         return creationTimestamp;
     }
-    public void addAlbum(Album album) {
+    public void addAlbum(AlbumsEntity album) {
         albumList.add(album);
     }
 

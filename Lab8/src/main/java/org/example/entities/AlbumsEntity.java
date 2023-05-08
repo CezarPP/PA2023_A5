@@ -1,5 +1,8 @@
 package org.example.entities;
 
+import org.example.DAOs.AlbumGenreDAO;
+import org.example.classes.Genre;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +25,8 @@ public class AlbumsEntity {
     @JoinColumn(name = "artist", referencedColumnName = "id")
     private ArtistsEntity artist;
 
+    private int artistId;
+
     @ManyToMany
     @JoinTable(
             name = "album_genres",
@@ -29,6 +34,32 @@ public class AlbumsEntity {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private List<GenresEntity> genres;
+
+    public AlbumsEntity(int id, Integer releaseYear, String title, ArtistsEntity artist, List<GenresEntity> genres) {
+        this.id = id;
+        this.releaseYear = releaseYear;
+        this.title = title;
+        this.artist = artist;
+        this.genres = genres;
+    }
+
+    public AlbumsEntity(int id, Integer releaseYear, String title, int artistId) {
+        this.id = id;
+        this.releaseYear = releaseYear;
+        this.title = title;
+        this.artistId = artistId;
+    }
+
+    public AlbumsEntity(int id, Integer releaseYear, String title, ArtistsEntity artist) {
+        this.id = id;
+        this.releaseYear = releaseYear;
+        this.title = title;
+        this.artist = artist;
+    }
+
+    public AlbumsEntity() {
+
+    }
 
     public int getId() {
         return id;
@@ -73,5 +104,15 @@ public class AlbumsEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, releaseYear, title, artist);
+    }
+
+    public boolean checkAreRelated(AlbumsEntity album) {
+        if (this.artist == album.artist || Objects.equals(this.releaseYear, album.releaseYear))
+            return true;
+        AlbumGenreDAO albumGenreDAO = new AlbumGenreDAO();
+        List<Genre> genreList1 = albumGenreDAO.getGenresOfAlbum(this.id);
+        List<Genre> genreList2 = albumGenreDAO.getGenresOfAlbum(album.id);
+
+        return genreList1.stream().anyMatch(genreList2::contains);
     }
 }

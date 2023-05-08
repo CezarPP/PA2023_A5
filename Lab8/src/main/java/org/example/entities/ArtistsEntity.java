@@ -19,6 +19,14 @@ public class ArtistsEntity {
     @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlbumsEntity> albums;
 
+    public ArtistsEntity(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public ArtistsEntity() {
+    }
+
     public int getId() {
         return id;
     }

@@ -23,4 +23,11 @@ public class ArtistRepository extends AbstractRepository<ArtistsEntity> {
         return artists;
     }
 
+    public List<ArtistsEntity> getAll() {
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        TypedQuery<ArtistsEntity> query = em.createQuery("SELECT a FROM ArtistsEntity a", ArtistsEntity.class);
+        return query.getResultList();
+    }
+
 }
