@@ -3,6 +3,7 @@ package org.example.DAOs;
 import com.zaxxer.hikari.HikariDataSource;
 import org.example.classes.Album;
 import org.example.entities.AlbumsEntity;
+import org.example.entities.ArtistsEntity;
 import org.example.misc.DatabaseConnection;
 
 import java.sql.Connection;
@@ -29,7 +30,14 @@ public class AlbumDAO implements DAO<AlbumsEntity> {
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-                    return new AlbumsEntity(rs.getInt("id"), rs.getInt("release_year"), rs.getString("title"), rs.getInt("artist"));
+                    int albumId = rs.getInt("id");
+                    int release_year = rs.getInt("release_year");
+                    String title = rs.getString("title");
+                    int artistId = rs.getInt("artist");
+                    ArtistsEntity artistsEntity = new ArtistsEntity();
+                    artistsEntity.setId(artistId);
+                    ArtistsEntity artist = new ArtistDAO().findById(artistsEntity);
+                    return new AlbumsEntity(albumId, release_year, title, artist);
                 }
             }
         } catch (SQLException e) {
@@ -48,7 +56,13 @@ public class AlbumDAO implements DAO<AlbumsEntity> {
              ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
-                albums.add(new AlbumsEntity(rs.getInt("id"), rs.getInt("release_year"), rs.getString("title"), rs.getInt("artist")));
+                int id = rs.getInt("id");
+                int releaseYear = rs.getInt("release_year");
+                String title = rs.getString("title");
+                int artistId = rs.getInt("artist");
+                ArtistsEntity auxArtist = new ArtistsEntity();
+                auxArtist.setId(artistId);
+                albums.add(new AlbumsEntity(id, releaseYear, title, new ArtistDAO().findById(auxArtist)));
             }
         } catch (SQLException e) {
             e.printStackTrace();

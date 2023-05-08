@@ -25,8 +25,6 @@ public class AlbumsEntity {
     @JoinColumn(name = "artist", referencedColumnName = "id")
     private ArtistsEntity artist;
 
-    private int artistId;
-
     @ManyToMany
     @JoinTable(
             name = "album_genres",
@@ -41,13 +39,6 @@ public class AlbumsEntity {
         this.title = title;
         this.artist = artist;
         this.genres = genres;
-    }
-
-    public AlbumsEntity(int id, Integer releaseYear, String title, int artistId) {
-        this.id = id;
-        this.releaseYear = releaseYear;
-        this.title = title;
-        this.artistId = artistId;
     }
 
     public AlbumsEntity(int id, Integer releaseYear, String title, ArtistsEntity artist) {

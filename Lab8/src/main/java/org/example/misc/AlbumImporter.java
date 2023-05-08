@@ -58,7 +58,9 @@ public class AlbumImporter {
                     return artist.getId();
                 });
 
-                AlbumsEntity album = new AlbumsEntity(0, year, albumTitle, artistId);
+                ArtistsEntity auxArtist = new ArtistsEntity();
+                auxArtist.setId(artistId);
+                AlbumsEntity album = new AlbumsEntity(0, year, albumTitle, artistDAO.findById(auxArtist));
                 albumDAO.create(album);
 
                 int genreId = genreMap.computeIfAbsent(genreName, name -> {

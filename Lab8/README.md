@@ -197,7 +197,7 @@ Inserted 1000 fake artists in 2356 ms
 Inserted 10000 fake albums in 3201 ms
 ```
 
-* [ ] Bonus
+* [x] Bonus
   * [x] JDBC and JPA implementations and use AbstractFactory to create DAO objects
 ```java
 public abstract class AbstractFactory {
@@ -242,4 +242,50 @@ public class JPADAOFactory extends AbstractFactory {
 }
 
 ```
-  * [ ] Constraint solver ...
+  * [x] Use constraint solver for a set of at least k albums with release years that are not more than p years apart
+```java
+public class AlbumConstraintSolver {
+
+    public static void findAlbums(List<AlbumsEntity> albums, int k, int p) {
+        System.out.println("Started solving for k -> " + k + " and p -> " + p);
+        Model model = new Model("Albums solver");
+
+        albums.sort(Comparator.comparing(AlbumsEntity::getTitle));
+
+        int n = albums.size();
+
+        IntVar[] isSelected = model.intVarArray("isSelected", n, 0, 1);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (albums.get(i).getTitle().charAt(0) != albums.get(j).getTitle().charAt(0)
+                        || Math.abs(albums.get(i).getReleaseYear() - albums.get(j).getReleaseYear()) > p) {
+                    model.arithm(isSelected[i], "+", isSelected[j], "<=", 1).post();
+                }
+            }
+        }
+
+        IntVar sum = model.intVar("sum", k, n);
+        model.sum(isSelected, "=", sum).post();
+
+        Solution solution = model.getSolver().findSolution();
+        // print solution
+    }
+}
+```
+
+Output:
+```
+Started solving for k -> 10 and p -> 10
+Solution found:
+Band on the Run, released in 1973
+Berlin, released in 1973
+Between the Buttons, released in 1967
+Bitches Brew, released in 1970
+Blonde on Blonde, released in 1966
+Blood on the Tracks, released in 1975
+Bookends, released in 1968
+Bridge Over Troubled Water, released in 1970
+Bringing It All Back Home, released in 1965
+Burnin', released in 1973
+```
