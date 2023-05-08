@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ArtistRepository extends AbstractRepository<ArtistsEntity> {
 
-    ArtistRepository() {
+    public ArtistRepository() {
         super(ArtistsEntity.class);
     }
 

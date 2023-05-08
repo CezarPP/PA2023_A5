@@ -6,6 +6,7 @@ import org.example.bonus.MaximalIndependentSets;
 import org.example.bonus.Playlist;
 import org.example.classes.Album;
 import org.example.classes.Artist;
+import org.example.misc.FakeDataGenerator;
 import org.graph4j.Graph;
 import org.graph4j.GraphBuilder;
 
@@ -14,8 +15,11 @@ import java.util.Set;
 
 public class Main {
     static final int MAX_MIS = 10;
+
     public static void main(String[] args) {
         // new AlbumImporter("/album_list.csv").importData();
+
+        // LAB8
 
         AlbumDAO albumDAO = new AlbumDAO();
         System.out.println("Listing all albums:");
@@ -40,8 +44,12 @@ public class Main {
         List<Set<Integer>> playlistList = mis.findAllMIS();
         Playlist playlist = new Playlist("First playlist");
         Set<Integer> playlistAlbums = playlistList.get(0);
-        for(Integer i : playlistAlbums)
+        for (Integer i : playlistAlbums)
             playlist.addAlbum(albumList.get(i));
         System.out.println(playlist);
+
+
+        // LAB9
+        FakeDataGenerator.insertRandomArtistsAndAlbums();
     }
 }

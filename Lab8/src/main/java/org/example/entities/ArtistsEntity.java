@@ -16,7 +16,7 @@ public class ArtistsEntity {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "artistEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlbumsEntity> albums;
 
     public int getId() {

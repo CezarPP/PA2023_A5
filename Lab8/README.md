@@ -1,11 +1,202 @@
 # Lab8 and Lab9
 
 ## Lab8
+
 * [x] Compulsory
 * [x] Optional
+    * [x] Create an object-oriented model
+    * [x] Implement all DAO classes
+    * [x] Create a connection pool -> I used HikariCP
+    * [x] Tool to import data from real dataset
+
+```java
+package org.example.misc;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class DatabaseConnection {
+    private static DatabaseConnection instance;
+    private final HikariDataSource dataSource;
+
+    private DatabaseConnection() {
+        HikariConfig config = new HikariConfig();
+
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/postgres");
+        config.setUsername("postgres");
+        config.setPassword("post123");
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        dataSource = new HikariDataSource(config);
+    }
+
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+
+    public static DatabaseConnection getInstance() {
+        if (instance == null) {
+            instance = new DatabaseConnection();
+        }
+        return instance;
+    }
+
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+}
+```
+
 * [x] Bonus
+    * [x] Playlists class
+    * [x] Maximal playlist of unrelated albums (BKT)
+
+```java
+public class MaximalIndependentSets {
+    //...
+    private void findAllMIS(int index) {
+        if (allMIS.size() >= maxMIS)
+            return;
+        if (index >= graph.numVertices()) {
+            allMIS.add(new HashSet<>(currentMIS));
+            return;
+        }
+
+        if (!visited.contains(index)) {
+            visited.add(index);
+
+            Set<Integer> neighbors = new HashSet<>();
+            for (int i = 0; i < graph.neighbors(index).length; i++)
+                neighbors.add(graph.neighbors(index)[i]);
+            Set<Integer> temp = new HashSet<>(visited);
+            visited.addAll(neighbors);
+
+            currentMIS.add(index);
+            findAllMIS(index + 1);
+            currentMIS.remove(index);
+
+            visited = temp;
+        }
+
+        findAllMIS(index + 1);
+    }
+}
+```
 
 ## Lab9
+
 * [x] Compulsory
-* [ ] Homework
+* [x] Homework
+    * [x] Create all entity classes and repositories. Implement relations.
+    * [x] Generic AbstractRepository
+
+```java
+package org.example.repositories;
+
+import org.example.misc.PersistenceManager;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.List;
+
+public abstract class AbstractRepository<T> {
+    private final Class<T> entityClass;
+
+    protected AbstractRepository(Class<T> entityClass) {
+        this.entityClass = entityClass;
+    }
+
+    protected EntityManager getEntityManager() {
+        return PersistenceManager.getInstance().getEntityManagerFactory().createEntityManager();
+    }
+
+    public void create(T entity) {
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        em.persist(entity);
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    public T findById(Object id) {
+        EntityManager em = getEntityManager();
+        T entity = em.find(entityClass, id);
+        em.close();
+        return entity;
+    }
+
+    public List<T> findByName(String name, String queryName) {
+        EntityManager em = getEntityManager();
+        TypedQuery<T> query = em.createNamedQuery(queryName, entityClass);
+        query.setParameter("name", "%" + name + "%");
+        List<T> resultList = query.getResultList();
+        em.close();
+        return resultList;
+    }
+}
+```
+
+* [x] Insert a large number of fake artists and albums
+
+```java
+package org.example.misc;
+
+import com.github.javafaker.Faker;
+import org.example.entities.AlbumsEntity;
+import org.example.entities.ArtistsEntity;
+import org.example.repositories.AlbumRepository;
+import org.example.repositories.ArtistRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class FakeDataGenerator {
+    private static final Faker FAKER = new Faker();
+
+    // ...
+    public static void insertRandomArtistsAndAlbums() {
+        ArtistRepository artistRepository = new ArtistRepository();
+        AlbumRepository albumRepository = new AlbumRepository();
+
+        final int numberOfFakeArtists = 1000;
+        final int numberOfFakeAlbums = 10000;
+
+        List<ArtistsEntity> fakeArtists = new ArrayList<>();
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < numberOfFakeArtists; i++) {
+            ArtistsEntity fakeArtist = FakeDataGenerator.createFakeArtist();
+            fakeArtists.add(fakeArtist);
+            artistRepository.create(fakeArtist);
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("Inserted " + numberOfFakeArtists + " fake artists in " + (end - start) + " ms");
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < numberOfFakeAlbums; i++) {
+            AlbumsEntity fakeAlbum = FakeDataGenerator.createFakeAlbum();
+            int randomArtistId = new Random().nextInt(fakeArtists.size());
+            fakeAlbum.setArtist(fakeArtists.get(randomArtistId));
+            albumRepository.create(fakeAlbum);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Inserted " + numberOfFakeAlbums + " fake albums in " + (end - start) + " ms");
+    }
+}
+```
+Output:
+```
+Inserted 1000 fake artists in 2356 ms
+Inserted 10000 fake albums in 3201 ms
+```
+
 * [ ] Bonus
+  * [ ] JDBC and JPA implementations and use AbstractFactory to create DAO objects
+  * [ ] Constraint solver ...
