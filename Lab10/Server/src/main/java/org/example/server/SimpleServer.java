@@ -9,7 +9,7 @@ import java.net.Socket;
 public class SimpleServer {
     public static final int PORT = 8100;
 
-    static public void GetSimpleServer() {
+    static public void startSimpleServer() {
         final GameList gameList = new GameList();
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (true) {
