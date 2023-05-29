@@ -56,7 +56,7 @@ public class ClassAnalyzer {
         return null;
     }
 
-    private static void extractClassMethods(Class<?> loadedClass) {
+    public static void extractClassMethods(Class<?> loadedClass) {
 
         String className = loadedClass.getSimpleName();
         System.out.println("Class: " + className);
@@ -68,11 +68,20 @@ public class ClassAnalyzer {
         }
     }
 
-    private static void invokeTestMethods(Class<?> loadedClass) throws Exception {
+    public static void invokeTestMethods(Class<?> loadedClass) throws Exception {
         Method[] methods = loadedClass.getDeclaredMethods();
         for (Method method : methods) {
             Annotation testAnnotation = method.getAnnotation(Test.class);
             if (testAnnotation != null && method.getParameterCount() == 0) {
+                method.invoke(null);
+            }
+        }
+    }
+
+    public static void invokeMethods(Class<?> loadedClass) throws Exception {
+        Method[] methods = loadedClass.getDeclaredMethods();
+        for (Method method : methods) {
+            if (method.getParameterCount() == 0) {
                 method.invoke(null);
             }
         }

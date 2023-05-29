@@ -9,5 +9,9 @@ public class Main {
         TestRunner testRunner = new TestRunner();
         testRunner.runTests(new File("C:\\Users\\Cezar\\Desktop\\Java\\Lab12\\target\\classes\\org\\example"));
         testRunner.printStatistics();
+        BytecodeModifier
+                .modifyClass("org.example.ExampleClass", "exampleMethod");
+        ClassAnalyzer
+                .analyze("C:\\Users\\Cezar\\Desktop\\Java\\Lab12\\target\\classes\\org\\example\\ExampleClass.class");
     }
 }

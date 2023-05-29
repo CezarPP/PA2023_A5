@@ -2,6 +2,8 @@ package org.example;
 
 import org.junit.jupiter.api.Test;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -16,6 +18,7 @@ import java.util.jar.JarFile;
 
 
 public class TestRunner {
+    private final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     private int testsRun = 0;
     private int testsPassed = 0;
 
@@ -34,9 +37,27 @@ public class TestRunner {
             runTestClass(className, url);
         } else if (file.getName().endsWith(".jar")) {
             runTestJar(file);
+        } else if (file.getName().endsWith(".java")) {
+            compileJavaFile(file);
+            String classFileName = file.getName().replace(".java", ".class");
+            File classFile = new File(file.getParentFile(), classFileName);
+            if (classFile.exists()) {
+                String rootPath = classFile.getPath().substring(0, classFile.getPath().indexOf("\\target\\classes") + "\\target\\classes".length());
+                URL classUrl = new File(rootPath).toURI().toURL();
+                String className = classFile.getPath()
+                        .replace(".class", "")
+                        .replace("/", ".")
+                        .replace("\\", ".");
+                className = className.substring(className.indexOf("org"));
+                runTestClass(className, classUrl);
+            }
         }
     }
 
+    private void compileJavaFile(File file) {
+        String filePath = file.getPath();
+        compiler.run(null, null, null, filePath);
+    }
     private void runTestClass(String className, URL classUrl) {
         try (URLClassLoader classLoader = new URLClassLoader(new URL[]{classUrl})) {
             Class<?> loadedClass = classLoader.loadClass(className);
