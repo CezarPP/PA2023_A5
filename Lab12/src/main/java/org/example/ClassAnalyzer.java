@@ -30,7 +30,9 @@ public class ClassAnalyzer {
 
     private static Class<?> loadClass(String classFilePath) {
         File file = new File(classFilePath);
-        String rootPath = classFilePath.substring(0, classFilePath.indexOf("\\target\\classes") + "\\target\\classes".length());
+        String target = "\\target\\classes";
+        String rootPath = (classFilePath.contains(target) ?
+                (classFilePath.substring(0, classFilePath.indexOf(target) + target.length())) : "");
 
         URL url = null;
         try {
@@ -42,8 +44,9 @@ public class ClassAnalyzer {
         try (URLClassLoader classLoader = new URLClassLoader(new URL[]{url})) {
             String className = file.getPath()
                     .replace(".class", "")
-                    .replace("\\", ".")
-                    .substring(rootPath.length() + 1);
+                    .replace("\\", ".");
+            if (!rootPath.equals(""))
+                className = className.substring(rootPath.length() + 1);
 
             return classLoader.loadClass(className);
         } catch (ClassNotFoundException exception) {

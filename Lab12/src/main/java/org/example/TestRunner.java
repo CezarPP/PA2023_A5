@@ -22,13 +22,20 @@ public class TestRunner {
     private int testsRun = 0;
     private int testsPassed = 0;
 
-    public void runTests(File file) throws IOException {
+    public void runTests(File file) {
         if (file.isDirectory()) {
             for (File child : Objects.requireNonNull(file.listFiles())) {
                 runTests(child);
             }
         } else if (file.getName().endsWith(".class")) {
-            URL url = file.toURI().toURL();
+            URL url = null;
+            try {
+                url = file.toURI().toURL();
+            } catch (IOException exception) {
+                System.out.println("Failed to get url " + exception.getMessage());
+                exception.printStackTrace();
+                System.exit(-1);
+            }
             String className = file.getPath()
                     .replace(".class", "")
                     .replace("/", ".")
@@ -43,7 +50,14 @@ public class TestRunner {
             File classFile = new File(file.getParentFile(), classFileName);
             if (classFile.exists()) {
                 String rootPath = classFile.getPath().substring(0, classFile.getPath().indexOf("\\target\\classes") + "\\target\\classes".length());
-                URL classUrl = new File(rootPath).toURI().toURL();
+                URL classUrl = null;
+                try {
+                    classUrl = new File(rootPath).toURI().toURL();
+                } catch (IOException exception) {
+                    System.out.println("Failed to get classUrl: " + exception.getMessage());
+                    exception.printStackTrace();
+                    System.exit(-1);
+                }
                 String className = classFile.getPath()
                         .replace(".class", "")
                         .replace("/", ".")
@@ -58,6 +72,7 @@ public class TestRunner {
         String filePath = file.getPath();
         compiler.run(null, null, null, filePath);
     }
+
     private void runTestClass(String className, URL classUrl) {
         try (URLClassLoader classLoader = new URLClassLoader(new URL[]{classUrl})) {
             Class<?> loadedClass = classLoader.loadClass(className);
@@ -100,7 +115,7 @@ public class TestRunner {
         }
     }
 
-    private void runTestJar(File file) throws IOException {
+    private void runTestJar(File file) {
         try (JarFile jarFile = new JarFile(file)) {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
@@ -114,6 +129,10 @@ public class TestRunner {
                     runTestClass(className, url);
                 }
             }
+        } catch (IOException exception) {
+            System.out.println("Error testing jar: " + exception.getMessage());
+            exception.printStackTrace();
+            System.exit(-1);
         }
     }
 

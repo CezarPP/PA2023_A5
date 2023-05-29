@@ -29,4 +29,22 @@ public class BytecodeModifier {
             throw new RuntimeException(e);
         }
     }
+
+    public static void createClass(String className) {
+        try {
+            ClassPool pool = ClassPool.getDefault();
+            CtClass cc = pool.makeClass(className);
+
+            CtMethod method = CtNewMethod.make("public void hello() { System.out.println(\"Hello, world!\"); }", cc);
+
+            cc.addMethod(method);
+
+            cc.toClass();
+            cc.detach();
+        } catch (CannotCompileException exception) {
+            System.out.println("Exception: " + exception.getMessage());
+            exception.getStackTrace();
+            System.exit(-1);
+        }
+    }
 }
