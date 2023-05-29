@@ -13,6 +13,11 @@ public class Cat {
         this.age = age;
     }
 
+    public Cat() {
+        this.name = "George";
+        this.age = 2;
+    }
+
     public String getName() {
         return name;
     }
@@ -27,7 +32,13 @@ public class Cat {
 
     @Test
     public static void thisIsACat() {
-        System.out.println("Test: this is a cat");
+        System.out.println("Static test: this is a cat");
+        assertTrue(true);
+    }
+
+    @Test
+    public void nonStaticTestMethod() {
+        System.out.println("Non static test: This is really a cat");
         assertTrue(true);
     }
 

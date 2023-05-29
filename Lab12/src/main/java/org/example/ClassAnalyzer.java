@@ -3,55 +3,80 @@ package org.example;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.lang.reflect.Field;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import java.lang.annotation.Annotation;
+
 public class ClassAnalyzer {
+    public static void analyze(String classFilePath) {
 
-    public void run(String classPath, String className) {
+        Class<?> loadedClass;
         try {
-            File file = new File(classPath);
+            loadedClass = loadClass(classFilePath);
 
-            URL url = file.toURI().toURL();
-            URL[] urls = new URL[]{url};
+            String packageName = loadedClass.getPackage().getName();
+            System.out.println("Package: " + packageName);
 
-            ClassLoader loader = new URLClassLoader(urls);
+            extractClassMethods(loadedClass);
+            invokeTestMethods(loadedClass);
+        } catch (Exception exception) {
+            System.out.println("Failed to load class" + exception.getMessage());
+            System.exit(-1);
+        }
+    }
 
-            // Load in the class
-            Class<?> cls = loader.loadClass(className);
+    private static Class<?> loadClass(String classFilePath) {
+        File file = new File(classFilePath);
+        String rootPath = classFilePath.substring(0, classFilePath.indexOf("\\target\\classes") + "\\target\\classes".length());
 
-            Package pkg = cls.getPackage();
-            if (pkg != null) {
-                String packageName = pkg.getName();
-                System.out.println("Package: " + packageName);
-            } else {
-                System.out.println("No package for the class " + cls.getName());
+        URL url = null;
+        try {
+            url = file.toURI().toURL();
+        } catch (IOException exception) {
+            System.out.println("Error getting url from class file path");
+            System.exit(-1);
+        }
+        try (URLClassLoader classLoader = new URLClassLoader(new URL[]{url})) {
+            String className = file.getPath()
+                    .replace(".class", "")
+                    .replace("\\", ".")
+                    .substring(rootPath.length() + 1);
+
+            return classLoader.loadClass(className);
+        } catch (ClassNotFoundException exception) {
+            System.out.println("Class not found: " + exception.getMessage());
+            System.exit(-1);
+        } catch (IOException exception) {
+            System.out.println("Error loading class: " + exception.getMessage());
+            System.exit(-1);
+        }
+        return null;
+    }
+
+    private static void extractClassMethods(Class<?> loadedClass) {
+
+        String className = loadedClass.getSimpleName();
+        System.out.println("Class: " + className);
+
+        Method[] methods = loadedClass.getDeclaredMethods();
+        System.out.println("Methods:");
+        for (Method method : methods) {
+            System.out.println("- " + method.getName());
+        }
+    }
+
+    private static void invokeTestMethods(Class<?> loadedClass) throws Exception {
+        Method[] methods = loadedClass.getDeclaredMethods();
+        for (Method method : methods) {
+            Annotation testAnnotation = method.getAnnotation(Test.class);
+            if (testAnnotation != null && method.getParameterCount() == 0) {
+                method.invoke(null);
             }
-
-            System.out.println("The methods are:");
-            for (Method method : cls.getDeclaredMethods()) {
-                System.out.println(method);
-            }
-            System.out.println("The fields are:");
-            for (Field field : cls.getDeclaredFields()) {
-                System.out.println(field);
-            }
-
-            // Find and invoke methods with @Test annotation
-            for (Method method : cls.getDeclaredMethods()) {
-                if (method.isAnnotationPresent(Test.class)) {
-                    method.setAccessible(true);
-
-                    if (java.lang.reflect.Modifier.isStatic(method.getModifiers())) {
-                        method.invoke(null);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }
+
 
